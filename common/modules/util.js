@@ -129,7 +129,10 @@ export const defaults = {
   rssQuality: '1080',
   rssFeedsNew: SUPPORTS.extensions ? [['New Releases', 'SubsPlease']] : [],
   rssAutoplay: true,
-  torrentSpeed: 5,
+  torrentSpeed: 5, // legacy
+  downloadSpeed: 5,
+  uploadSpeed: 1,
+  slowSeeding: true,
   torrentPersist: false,
   torrentDHT: false,
   torrentPeX: false,
