@@ -25,49 +25,87 @@ export default class Discord {
 
   discord = new Client({ transport: 'ipc' })
 
-  /** @type {Discord['defaultStatus'] | undefined} */
-  allowDiscordDetails
+  /** @type {boolean} */
+  allowDiscordDetails = false
+
   /** @type {Discord['defaultStatus'] | undefined} */
   cachedPresence
 
   /** @param {import('electron').BrowserWindow} window */
-  constructor (window) {
-    ipcMain.on('show-discord-status', (event, data) => {
-      this.allowDiscordDetails = data
-      this.debouncedDiscordRPC(this.allowDiscordDetails ? this.cachedPresence : undefined)
+  constructor(window) {
+    // Toggle Discord Rich Presence on/off
+    ipcMain.on('show-discord-status', async (event, enableRPC) => {
+      this.allowDiscordDetails = enableRPC
+      if (this.allowDiscordDetails) {
+        // Enable Rich Presence
+        await this.setDiscordRPC(this.cachedPresence || this.defaultStatus)
+      } else {
+        // Disable Rich Presence
+        await this.clearDiscordRPC()
+      }
     })
 
-    ipcMain.on('discord', (event, data) => {
+    // Update presence details
+    ipcMain.on('discord', async (event, data) => {
       this.cachedPresence = data
-      this.debouncedDiscordRPC(this.allowDiscordDetails ? this.cachedPresence : undefined)
+      if (this.allowDiscordDetails) {
+        await this.setDiscordRPC(this.cachedPresence || this.defaultStatus)
+      }
     })
 
+    // Discord client ready event
     this.discord.on('ready', async () => {
-      this.setDiscordRPC(this.cachedPresence || this.defaultStatus)
-      this.discord.subscribe('ACTIVITY_JOIN_REQUEST')
-      this.discord.subscribe('ACTIVITY_JOIN')
-      this.discord.subscribe('ACTIVITY_SPECTATE')
+      if (this.allowDiscordDetails) {
+        await this.setDiscordRPC(this.cachedPresence || this.defaultStatus)
+      }
     })
 
+    // Handle incoming activity join requests
     this.discord.on('ACTIVITY_JOIN', ({ secret }) => {
       window.webContents.send('w2glink', secret)
     })
 
+    // Attempt to log in
     this.loginRPC()
 
-    this.debouncedDiscordRPC = debounce(status => this.setDiscordRPC(status), 4500)
+    // Debounce RPC updates to avoid spamming Discord
+    this.debouncedDiscordRPC = debounce((status) => this.setDiscordRPC(status), 4500)
   }
 
-  loginRPC () {
+  /**
+   * Logs in the Discord RPC client and retries on failure.
+   */
+  loginRPC() {
     this.discord.login({ clientId: '954855428355915797' }).catch(() => {
       setTimeout(() => this.loginRPC(), 5000).unref()
     })
   }
 
-  setDiscordRPC (data = this.defaultStatus) {
+  /**
+   * Sets the Discord Rich Presence.
+   * @param {Discord['defaultStatus'] | undefined} data
+   */
+  async setDiscordRPC(data) {
     if (this.discord.user && data) {
-      data.pid = process.pid
-      this.discord.request('SET_ACTIVITY', data)
+      try {
+        data.pid = process.pid
+        await this.discord.request('SET_ACTIVITY', data)
+      } catch (error) {
+        console.error('Error setting Discord RPC:', error)
+      }
+    }
+  }
+
+  /**
+   * Clears Discord Rich Presence completely.
+   */
+  async clearDiscordRPC() {
+    if (this.discord.user) {
+      try {
+        await this.discord.request('SET_ACTIVITY', { pid: process.pid, activity: null })
+      } catch (error) {
+        console.error('Error clearing Discord RPC:', error)
+      }
     }
   }
 }
