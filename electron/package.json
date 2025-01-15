@@ -42,7 +42,11 @@
     "directories": {
       "buildResources": "buildResources"
     },
-    "electronDist": "electron-dist",
+    "electronDownload": {
+      "mirror": "https://github.com/electron/electron/releases/download/",
+      "version": "32.1.1",
+      "customDir": "v32.1.1"
+    },
     "asarUnpack": "**/*.node",
     "protocols": {
       "name": "miru",

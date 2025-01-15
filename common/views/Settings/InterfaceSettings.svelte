@@ -13,11 +13,11 @@
 </script>
 
 {#if SUPPORTS.discord}
-  <h4 class='mb-10 font-weight-bold'>Rich Pressence Settings</h4>
-  <SettingCard title='Show Details in Discord Rich Presence' description='Shows currently played anime and episode in Discord rich presence.'>
+  <h4 class='mb-10 font-weight-bold'>Discord Rich Presence Settings</h4>
+  <SettingCard title='Enable Discord Rich Presence' description='Toggle Discord Rich Presence for privacy reasons'>
     <div class='custom-switch'>
-      <input type='checkbox' id='rpc-details' bind:checked={settings.showDetailsInRPC} />
-      <label for='rpc-details'>{settings.showDetailsInRPC ? 'On' : 'Off'}</label>
+      <input type='checkbox' id='rpc-details' bind:checked={settings.enableRPC} />
+      <label for='rpc-details'>{settings.enableRPC ? 'On' : 'Off'}</label>
     </div>
   </SettingCard>
 {/if}
