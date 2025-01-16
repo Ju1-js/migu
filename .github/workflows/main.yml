@@ -48,7 +48,8 @@ jobs:
         run: cd electron && npm run publish
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-artifacts-${{ matrix.os }}
           path: electron/dist/**
+          if-no-files-found: error
