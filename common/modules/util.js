@@ -129,13 +129,13 @@ export const defaults = {
   rssQuality: '1080',
   rssFeedsNew: SUPPORTS.extensions ? [['New Releases', 'SubsPlease']] : [],
   rssAutoplay: true,
-  torrentSpeed: 10,
+  /* torrentSpeed: 10, */ // Deprecated in favor of split upload/download
   downloadSpeed: 10,
   uploadSpeed: 10,
-  slowSeeding: true,
+  slowSeeding: false,
   torrentPersist: false,
-  torrentDHT: true,
-  torrentPeX: true,
+  torrentDHT: false,
+  torrentPeX: false,
   torrentPort: 0,
   torrentStreamedDownload: true,
   dhtPort: 0,
@@ -160,7 +160,8 @@ export const defaults = {
   enableExternal: false,
   playerPath: '',
   playerSeek: 2,
-  playerSkip: false
+  playerSkip: false,
+  watchedUsing: true
 }
 
 export const subtitleExtensions = ['srt', 'vtt', 'ass', 'ssa', 'sub', 'txt']

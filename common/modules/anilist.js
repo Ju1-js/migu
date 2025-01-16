@@ -2,9 +2,10 @@ import lavenshtein from 'js-levenshtein'
 import { writable } from 'simple-store-svelte'
 import Bottleneck from 'bottleneck'
 
-import { alToken } from '@/modules/settings.js'
+import { alToken, settings } from '@/modules/settings.js'
 import { toast } from 'svelte-sonner'
 import { sleep } from './util.js'
+import { get } from 'svelte/store'
 import IPC from '@/modules/ipc.js'
 import Debug from 'debug'
 
@@ -406,7 +407,7 @@ class AnilistClient {
         variables.status = 'COMPLETED'
         if (media.mediaListEntry?.status === 'REPEATING') variables.repeat = media.mediaListEntry.repeat + 1
       }
-      if (!lists.includes('Watched using Miru')) {
+      if (!lists.includes('Watched using Miru') && get(settings).watchedUsing) {
         variables.lists.push('Watched using Miru')
       }
       await this.entry(variables)
@@ -739,7 +740,9 @@ class AnilistClient {
 
   customList (variables = {}) {
     debug('Updating custom list')
-    variables.lists = [...variables.lists, 'Watched using Miru']
+    if (get(settings).watchedUsing) {
+      variables.lists = [...variables.lists, 'Watched using Miru']
+    }
     const query = /* js */`
       mutation($lists: [String]) {
         UpdateUser(animeListOptions: { customLists: $lists }) {
