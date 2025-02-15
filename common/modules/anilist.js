@@ -740,9 +740,7 @@ class AnilistClient {
 
   customList (variables = {}) {
     debug('Updating custom list')
-    if (get(settings).watchedUsing) {
-      variables.lists = [...variables.lists, 'Watched using Miru']
-    }
+    variables.lists = [...variables.lists, 'Watched using Miru']
     const query = /* js */`
       mutation($lists: [String]) {
         UpdateUser(animeListOptions: { customLists: $lists }) {
