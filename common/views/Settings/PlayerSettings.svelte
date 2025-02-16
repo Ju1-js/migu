@@ -143,6 +143,12 @@
     <label for='player-autocomplete'>{settings.playerAutocomplete ? 'On' : 'Off'}</label>
   </div>
 </SettingCard>
+<SettingCard title='Create "Watched using Miru" list' description='Disabling this option will prevent the automatic creation of the "Watched using Miru" list on AniList.'>
+  <div class='custom-switch'>
+    <input type='checkbox' id='player-watchedMiru' bind:checked={settings.watchedUsing} />
+    <label for='player-watchedMiru'>{settings.watchedUsing ? 'On' : 'Off'}</label>
+  </div>
+</SettingCard>
 <SettingCard title='Deband Video' description='Reduces banding on dark and compressed videos. High performance impact, not recommended for high quality videos.'>
   <div class='custom-switch'>
     <input type='checkbox' id='player-deband' bind:checked={settings.playerDeband} />
@@ -161,6 +167,14 @@
   <div class='custom-switch'>
     <input type='checkbox' id='player-skip' bind:checked={settings.playerSkip} />
     <label for='player-skip'>{settings.playerSkip ? 'On' : 'Off'}</label>
+  </div>
+</SettingCard>
+
+<h4 class='mb-10 font-weight-bold'>Discord Rich Presence Settings</h4>
+<SettingCard title='Enable Discord Rich Presence' description='Toggle Discord Rich Presence for privacy reasons'>
+  <div class='custom-switch'>
+    <input type='checkbox' id='rpc-details' bind:checked={settings.enableRPC} />
+    <label for='rpc-details'>{settings.enableRPC ? 'On' : 'Off'}</label>
   </div>
 </SettingCard>
 

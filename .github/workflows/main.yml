@@ -5,6 +5,7 @@ on:
     branches:
       - 'main'
       - 'master'
+      - 'development'
 
 jobs:
   release:
@@ -45,3 +46,10 @@ jobs:
           # APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           # APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
         run: cd electron && npm run publish
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts-${{ matrix.os }}
+          path: electron/dist/**
+          if-no-files-found: error
