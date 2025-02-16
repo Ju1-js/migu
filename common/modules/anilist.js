@@ -385,7 +385,7 @@ class AnilistClient {
       // check episode range, safety check if `failed` didn't catch this
       if (videoEpisode > mediaEpisode) return
 
-      const lists = media.mediaListEntry?.customLists.filter(list => list.enabled).map(list => list.name) || []
+      const lists = (media.mediaListEntry?.customLists ?? []).filter(list => list.enabled).map(list => list.name) || [];
 
       const status = media.mediaListEntry?.status === 'REPEATING' ? 'REPEATING' : 'CURRENT'
       const progress = media.mediaListEntry?.progress
