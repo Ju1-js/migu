@@ -176,6 +176,8 @@ export default class Subtitles {
         useLocalFonts: settings.value.missingFont,
         dropAllBlur: settings.value.disableSubtitleBlur
       }
+      // @ts-expect-error yeah, patching the library
+      if (SUPPORTS.isAndroid) JASSUB._hasBitmapBug = true
       this.renderer = new JASSUB(options)
     }
   }
