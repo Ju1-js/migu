@@ -117,8 +117,8 @@
                 userID: profile.viewer.data.Viewer.id,
                 token: profile.token
               }))?.data?.MediaListCollection?.lists?.flatMap(list => list.entries).find(({media}) => media.id === mediaId)?.media?.mediaListEntry?.customLists?.filter(list => list.enabled).map(list => list.name) || [] : lists)
-              if (!currentLists.includes('Watched using Miru')) {
-                currentLists.push('Watched using Miru')
+              if (!currentLists.includes('Watched using Migu')) {
+                currentLists.push('Watched using Migu')
               }
               const res = await Helper.entry(media, {
                 ...variables,
