@@ -10,12 +10,12 @@ export default class Discord {
       state: 'Watching anime',
       assets: {
         small_image: 'logo',
-        small_text: 'https://github.com/NoCrypt/migu'
+        small_text: 'https://github.com/Ju1-js/migu'
       },
       buttons: [
         {
           label: 'Download app',
-          url: 'https://github.com/NoCrypt/migu/releases/latest'
+          url: 'https://github.com/Ju1-js/migu/releases/latest'
         }
       ],
       instance: true,

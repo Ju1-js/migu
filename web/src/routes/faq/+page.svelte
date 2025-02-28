@@ -2,7 +2,7 @@
   <div class='content'>
     <div class='h-vh-half row px-20 px-sm-0 d-flex justify-content-center flex-column'>
       <h1 class='font-weight-bold text-white title'>Frequently Asked Questions</h1>
-      <div class='font-size-18 text-muted'>Most commonly asked questions about Miru and its usage.</div>
+      <div class='font-size-18 text-muted'>Most commonly asked questions about Migu and its usage.</div>
     </div>
     <hr class='my-20' />
     <h3 class='text-white font-weight-bold'>What extensions are there? How to make extensions?</h3>
@@ -14,11 +14,11 @@
     <h3 class='text-white font-weight-bold'>Can I reduce the upload speed?</h3>
     <p>No. See above. This app is also meant to seed the torrents the user downloads, if you want freeleech go to some private tracker.</p>
     <hr class='my-20' />
-    <h3 class='text-white font-weight-bold'>Does Miru stream the video or does it store it?</h3>
-    <p>Miru only stores 1 torrent on your drive, unless <kbd>Persist Files</kbd> is enabled in settings. It doesn't stream the content as it also needs to seed the data it downloads to keep the swarm alive. It's important to note that it stores 1 torrent, not 1 video. A single torrent can sometimes consist of many video files, and as such take up a lot of space.</p>
+    <h3 class='text-white font-weight-bold'>Does Migu stream the video or does it store it?</h3>
+    <p>Migu only stores 1 torrent on your drive, unless <kbd>Persist Files</kbd> is enabled in settings. It doesn't stream the content as it also needs to seed the data it downloads to keep the swarm alive. It's important to note that it stores 1 torrent, not 1 video. A single torrent can sometimes consist of many video files, and as such take up a lot of space.</p>
     <hr class='my-20' />
-    <h3 class='text-white font-weight-bold'>I have an existing media library, can Miru import it?</h3>
-    <p>No. Miru does not scan libraries like Plex or Jellyfin. You can however specify Miru's <kbd>Torrent Download Location</kbd> in settings, and if you pick torrents which are already in the selected folder, Miru will use them without re-download them. Make sure that <kbd>Persis Files</kbd> is enabled, or Miru will delete content that was already watched.</p>
+    <h3 class='text-white font-weight-bold'>I have an existing media library, can Migu import it?</h3>
+    <p>No. Migu does not scan libraries like Plex or Jellyfin. You can however specify Migu's <kbd>Torrent Download Location</kbd> in settings, and if you pick torrents which are already in the selected folder, Migu will use them without re-download them. Make sure that <kbd>Persis Files</kbd> is enabled, or Migu will delete content that was already watched.</p>
     <hr class='my-20' />
     <h3 class='text-white font-weight-bold'>Is this safe?</h3>
     <p>It's recommended that you read the <a href='https://thewiki.moe/getting-started/torrenting/' target='_blank'>guide about basics of torrenting</a>.</p>
@@ -38,8 +38,8 @@
       <li>the app couldn't find a matching torrent for the anime</li>
     </ul>
     <hr class='my-20' />
-    <h3 class='text-white font-weight-bold'>I selected an episode to play, but Miru plays something else!</h3>
-    <p>Finding desired episodes can sometimes be difficult, if Miru auto-selects an episode incorrectly you can either disable auto-play torrents in settings to select torrents yourself during episode choosing, or manually find and paste in a .torrent file URL or a magnet URL into Miru to play a desired episode manually.</p>
+    <h3 class='text-white font-weight-bold'>I selected an episode to play, but Migu plays something else!</h3>
+    <p>Finding desired episodes can sometimes be difficult, if Migu auto-selects an episode incorrectly you can either disable auto-play torrents in settings to select torrents yourself during episode choosing, or manually find and paste in a .torrent file URL or a magnet URL into Migu to play a desired episode manually.</p>
     <hr class='my-20' />
     <h3 class='text-white font-weight-bold'>Can I play my own torrents?</h3>
     <p>Yes. For the home menu you can specify a different RSS feed to check when the app looks for new releases. Additionally you can just paste/drag-drop a torrent file/magnet link anywhere when using the app, and it will try it's best to auto-detect what anime is playing.</p>
@@ -58,8 +58,8 @@
     <h5 class='text-white font-weight-bold'>&gt; Can't you make this just use WebRTC?</h5>
     <p>Yes. A BitTorrent implementation which uses WebRTC exists, but it's not yet adopted by any clients, and libtorrent [the library which qBit and others use] is still working on/just added support for WebRTC, which means there's no global swarm. This will hopefully change in the future.</p>
     <hr class='my-20' />
-    <h3 class='text-white font-weight-bold'>Miru crashed too many times.</h3>
-    <p>This is likely because Miru updated from a very old version to a very new one. Uninstall Miru, go to <kbd>%appdata%/miru</kbd> remove all files and re-install it. If this issue persists visit the Discord for help.</p>
+    <h3 class='text-white font-weight-bold'>Migu crashed too many times.</h3>
+    <p>This is likely because Migu updated from a very old version to a very new one. Uninstall Migu, go to <kbd>%appdata%/migu</kbd> remove all files and re-install it. If this issue persists visit the Discord for help.</p>
   </div>
 </div>
 

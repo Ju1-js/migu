@@ -381,7 +381,7 @@ export const cards = [
       status: 'COMPLETED',
       customLists: [
         {
-          name: 'Watched using Miru',
+          name: 'Watched using Migu',
           enabled: true
         }
       ],

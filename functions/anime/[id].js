@@ -13,7 +13,7 @@ export function onRequest ({ params }) {
     <meta property="og:title" content="Anime">
     <meta property="og:description" content="Stream anime torrents, real-time with no waiting for downloads">
     <meta property="og:site_name" content="Migu">
-    <meta property="og:image" content=https://miguapp.pages.dev/imgs/banner.png>
+    <meta property="og:image" content=https://miguapp.pages.dev/app_original.png>
     <meta property="og:url" content=migu://anime/${id}>
     <meta data-vmid="twitter:card" name="twitter:card" content="summary_large_image">
     <meta name="theme-color" content="#17191C">

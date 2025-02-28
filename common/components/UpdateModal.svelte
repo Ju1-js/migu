@@ -5,7 +5,7 @@
 
   export const updateModal = writable(false)
   export const changeLog = (async () => {
-    const res = await fetch('https://api.github.com/repos/NoCrypt/migu/releases')
+    const res = await fetch('https://api.github.com/repos/Ju1-js/migu/releases')
     const json = await res.json()
     return [json.map(({ body, tag_name: version, published_at: date, assets }) => ({ body, version, date, assets }))[0]]
   })()

@@ -1089,7 +1089,7 @@
           large_text: np.title,
           large_image: np.thumbnail,
           small_image: !paused ? 'logo' : 'paused',
-          small_text: (!paused ? '(Playing)' : '(Paused)') + ' https://github.com/NoCrypt/migu'
+          small_text: (!paused ? '(Playing)' : '(Paused)') + ' https://github.com/Ju1-js/migu'
         },
         instance: true,
         type: 3
@@ -1105,7 +1105,7 @@
         activity.buttons = [
           {
             label: 'Download app',
-            url: 'https://github.com/NoCrypt/migu/releases/latest'
+            url: 'https://github.com/Ju1-js/migu/releases/latest'
           },
           {
             label: 'Watch on Migu',
@@ -1120,14 +1120,14 @@
         state: 'Browsing for anime',
         assets: {
           large_image: 'logo',
-          large_text: 'https://github.com/NoCrypt/migu',
+          large_text: 'https://github.com/Ju1-js/migu',
           small_image: 'search',
           small_text: 'Browsing for anime',
         },
         buttons: [
           {
             label: 'Download app',
-            url: 'https://github.com/NoCrypt/migu/releases/latest'
+            url: 'https://github.com/Ju1-js/migu/releases/latest'
           }
         ],
         instance: true,

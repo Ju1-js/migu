@@ -393,8 +393,8 @@ class AnilistClient {
         variables.status = 'COMPLETED'
         if (media.mediaListEntry?.status === 'REPEATING') variables.repeat = media.mediaListEntry.repeat + 1
       }
-      if (!lists.includes('Watched using Miru') && get(settings).watchedUsing) {
-        variables.lists.push('Watched using Miru')
+      if (!lists.includes('Watched using Migu') && get(settings).watchedUsing) {
+        variables.lists.push('Watched using Migu')
       }
       await this.entry(variables)
       this.userLists.value = this.getUserLists()

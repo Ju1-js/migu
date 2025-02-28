@@ -27,7 +27,7 @@
   }
   const noop = () => {}
   function play () {
-    open('miru://anime/' + media.id)
+    open('migu://anime/' + media.id)
   }
   function lazyload (iframe) {
     if ('IntersectionObserver' in window) {

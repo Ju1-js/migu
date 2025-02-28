@@ -1,5 +1,5 @@
 <p align="center">
-	<a href="https://github.com/NoCrypt/migu">
+	<a href="https://github.com/Ju1-js/migu">
 		<img src="./common/public/logo_filled.png" width="250">
 	</a>
 </p>
@@ -7,7 +7,7 @@
 
 <h4 align="center"><b>Stream anime torrents, real-time with no waiting for downloads</b></h4>
 
-**Migu** is a fork of [Miru](https://github.com/ThaUnknown/miru/) that focused on better **mobile** experience with added features and polished the experience by a mile.
+**Migu** is a fork of [Migu](https://github.com/NoCrypt/migu/) which is a fork of [Miru](https://github.com/ThaUnknown/miru/) that focused on better **mobile** experience with added features and polished the experience by a mile.
 
 ## **Features**
 

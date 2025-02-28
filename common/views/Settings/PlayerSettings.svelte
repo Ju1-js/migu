@@ -147,10 +147,10 @@
     <label for='player-autocomplete'>{settings.playerAutocomplete ? 'On' : 'Off'}</label>
   </div>
 </SettingCard>
-<SettingCard title='Create "Watched using Miru" list' description='Disabling this option will prevent the automatic creation of the "Watched using Miru" list on AniList.'>
+<SettingCard title='Create "Watched using Migu" list' description='Disabling this option will prevent the automatic creation of the "Watched using Migu" list on AniList.'>
   <div class='custom-switch'>
-    <input type='checkbox' id='player-watchedMiru' bind:checked={settings.watchedUsing} />
-    <label for='player-watchedMiru'>{settings.watchedUsing ? 'On' : 'Off'}</label>
+    <input type='checkbox' id='player-watchedMigu' bind:checked={settings.watchedUsing} />
+    <label for='player-watchedMigu'>{settings.watchedUsing ? 'On' : 'Off'}</label>
   </div>
 </SettingCard>
 <SettingCard title='Auto-Skip Intro/Outro' description='Automatically skip intro and outro. Warning, sometimes it can skip wrong part of the episode and you can&apos;t view Intro/Outro at all.'>

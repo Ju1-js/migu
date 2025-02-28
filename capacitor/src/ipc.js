@@ -35,7 +35,7 @@ main.once('version', async () => {
   main.emit('version', version)
 })
 
-const updater = new AutoUpdater('https://api.github.com/repos/NoCrypt/migu/releases/latest');
+const updater = new AutoUpdater('https://api.github.com/repos/Ju1-js/migu/releases/latest');
 
 main.on('update', async () => {
   await updater.initialize()

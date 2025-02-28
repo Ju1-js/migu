@@ -44,7 +44,7 @@
 
     downloads = {
       iOS: 'https://www.android.com',
-      Android: 'https://play.google.com/store/apps/details?id=watch.miru',
+      Android: 'https://play.google.com/store/apps/details?id=watch.migu',
       Windows: url('installer.exe'),
       'Mac OS': url('.dmg'),
       Linux: url('.AppImage'),
@@ -80,7 +80,7 @@
       <hr class='my-20' />
       <div class='px-20 px-sm-0 row'>
         <div class='col-12 col-lg-6 d-flex flex-column align-items-center d-lg-block pr-lg-20 pt-20'>
-          <h3 class='font-weight-bold text-white text-center text-lg-left pb-15'>Get Miru for other devices</h3>
+          <h3 class='font-weight-bold text-white text-center text-lg-left pb-15'>Get Migu for other devices</h3>
           <a class='text-reset card pointer col-2 m-0 mb-20 mw-full pb-20 w-500 d-block' href={downloads.Windows || releases}>
             <WindowsSVG />
             <div class='font-size-18 font-weight-semi-bold mt-5'>Windows</div>
@@ -135,10 +135,10 @@
               View changelog
             </a>
             <div class='pb-5 font-size-18 font-weight-bold'>
-              Older versions of Miru
+              Older versions of Migu
             </div>
             <a href={releases} class='hyperlink-underline pb-20 font-size-16 font-weight-bold'>
-              View older versions of Miru on GitHub
+              View older versions of Migu on GitHub
             </a>
           </div>
         </div>

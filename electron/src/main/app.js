@@ -94,7 +94,7 @@ export default class App {
     })
 
     if (process.platform === 'win32') {
-      app.setAppUserModelId('com.github.nocrypt.migu')
+      app.setAppUserModelId('com.github.ju1-js.migu')
       // this message usually fires in dev-mode from the parent process
       process.on('message', data => {
         if (data === 'graceful-exit') this.destroy()
@@ -128,8 +128,8 @@ export default class App {
     this.mainWindow.webContents.on('render-process-gone', async (e, { reason }) => {
       if (reason === 'crashed') {
         if (++crashcount > 10) {
-          await dialog.showMessageBox({ message: 'Crashed too many times.', title: 'Migu', detail: 'App crashed too many times. Make an issue at https://github.com/NoCrypt/migu/issues', icon: '/renderer/public/logo_filled.png' })
-          shell.openExternal('https://github.com/NoCrypt/migu/issues')
+          await dialog.showMessageBox({ message: 'Crashed too many times.', title: 'Migu', detail: 'App crashed too many times. Make an issue at https://github.com/Ju1-js/migu/issues', icon: '/renderer/public/logo_filled.png' })
+          shell.openExternal('https://github.com/Ju1-js/migu/issues')
         } else {
           app.relaunch()
         }

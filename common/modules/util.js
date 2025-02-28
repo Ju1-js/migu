@@ -200,7 +200,7 @@ export const defaults = {
   volumeScroll: !SUPPORTS.isAndroid,
   volumeScrollStep: 5,
   playbackRateStep: 0.1,
-  listUpdateToast: true
+  listUpdateToast: true,
   playerSkip: false,
   watchedUsing: true
 }

@@ -4,7 +4,7 @@
 <h1 class='text-white font-weight-bold'>Privacy Policy</h1>
 Last updated: November 27th, 2023.
 
-This document outlines the data practices associated with the use of the Miru application, referred to as "the application."
+This document outlines the data practices associated with the use of the Migu application, referred to as "the application."
 
 <h3 class='text-white font-weight-bold'>Local Storage of Basic Metadata</h3>The application stores basic metadata locally, and data essential for the BitTorrent protocol to function. This includes:
 
