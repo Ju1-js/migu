@@ -1,19 +1,13 @@
 /node_modules/
-android/*
-!android/variables.gradle
-!android/app
-android/app/*
-!android/app/build.gradle
-!android/app/src
-android/app/src/*
-!android/app/src/main
-android/app/src/main/*
-!android/app/src/main/AndroidManifest.xml
-!android/app/src/main/java
-ios/
+.idea/
+.vscode/
+*.map
+.sourcemaps
+dist/
+
 *.jks
 *.pepk
-*.bat
+# *.bat
 pepk.jar
 encryption_public_key.pem
 

@@ -1,4 +1,4 @@
-name: Build/release
+name: Electron Build and Release
 
 on:
   push:
@@ -6,6 +6,9 @@ on:
       - 'main'
       - 'master'
       - 'development'
+    paths-ignore:
+      - '**.md'
+      - '**.yml'
 
 jobs:
   release:
@@ -16,7 +19,7 @@ jobs:
         os: [windows-latest, ubuntu-latest, macos-latest]
 
     steps:
-      - name: Install Setuptools for Python
+      - name: Install Setuptools for Python (macOS only)
         if: matrix.os == 'macos-latest'
         run: pip3 install setuptools --break-system-packages
 
@@ -31,7 +34,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'pnpm'
 
       - name: Install dependencies

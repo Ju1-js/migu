@@ -3,4 +3,4 @@
 	url = https://github.com/nodejs-mobile/nodejs-mobile
 [submodule "electron/electron-dist"]
 	path = electron/electron-dist
-	url = https://github.com/electron/electron.git
+	url = https://github.com/Ju1-js/electron-dist
