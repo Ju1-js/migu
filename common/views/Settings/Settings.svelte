@@ -1,5 +1,4 @@
 <script context='module'>
-  import { toast } from 'svelte-sonner'
   import { click } from '@/modules/click.js'
   import { settings } from '@/modules/settings.js'
   import IPC from '@/modules/ipc.js'
@@ -21,11 +20,12 @@
   IPC.emit('version')
 
   const changeLog = (async () => {
-    const res = await fetch('https://api.github.com/repos/ThaUnknown/miru/releases')
+    const res = await fetch('https://api.github.com/repos/NoCrypt/migu/releases')
     const json = await res.json()
     return json.map(({ body, tag_name: version, published_at: date, assets }) => ({ body, version, date, assets }))
   })()
-  IPC.emit('show-discord-status', settings.value.enableRPC)
+  IPC.emit('show-discord-status', settings.value.showDetailsInRPC)
+  IPC.emit('toggle-rpc', settings.value.enableRPC)
 </script>
 
 <script>
@@ -35,9 +35,9 @@
   import TorrentSettings from './TorrentSettings.svelte'
   import InterfaceSettings from './InterfaceSettings.svelte'
   import AppSettings from './AppSettings.svelte'
-  import { anilistClient } from '@/modules/anilist.js'
-  import { logout } from '@/components/Logout.svelte'
+  import { profileView } from '@/components/Profiles.svelte'
   import smoothScroll from '@/modules/scroll.js'
+  import Helper from '@/modules/helper.js'
   import { AppWindow, Heart, LogIn, Logs, Play, Rss, Settings } from 'lucide-svelte'
 
   const groups = {
@@ -71,29 +71,20 @@
   }
 
   function loginButton () {
-    if (anilistClient.userID?.viewer?.data?.Viewer) {
-      $logout = true
-    } else {
-      IPC.emit('open', 'https://anilist.co/api/v2/oauth/authorize?client_id=4254&response_type=token') // Change redirect_url to miru://auth
-      if (platformMap[window.version.platform] === 'Linux') {
-        toast('Support Notification', {
-          description: "If your linux distribution doesn't support custom protocol handlers, you can simply paste the full URL into the app.",
-          duration: 300000
-        })
-      }
-    }
+    $profileView = true
   }
   onDestroy(() => {
     IPC.off('path', pathListener)
     IPC.off('player', playerListener)
   })
-  $: IPC.emit('show-discord-status', $settings.enableRPC)
+  $: IPC.emit('show-discord-status', $settings.showDetailsInRPC)
+  $: IPC.emit('toggle-rpc', $settings.enableRPC)
   IPC.on('path', pathListener)
   IPC.on('player', playerListener)
 </script>
 
 <Tabs>
-  <div class='d-flex w-full h-full position-relative settings root flex-md-row flex-column overflow-y-auto overflow-y-md-hidden' use:smoothScroll>
+  <div class='d-flex w-full h-full position-relative settings root flex-md-row flex-column overflow-y-auto overflow-y-md-hidden' style="padding-top: var(--safe-area-top)" use:smoothScroll>
     <div class='d-flex flex-column flex-row h-full w-md-300 bg-dark position-relative px-20 px-md-0 flex-basis-0-md-custom'>
       <div class='px-20 py-15 font-size-24 font-weight-semi-bold'>Settings</div>
       {#each Object.values(groups) as group}
@@ -104,22 +95,22 @@
           </div>
         </TabLabel>
       {/each}
-      <div class='pointer my-5 rounded' tabindex='0' role='button' use:click={() => IPC.emit('open', 'https://github.com/sponsors/ThaUnknown/')}>
+      <!-- <div class='pointer my-5 rounded' tabindex='0' role='button' use:click={() => IPC.emit('open', 'https://github.com/sponsors/ThaUnknown/')}>
         <div class='px-20 py-10 d-flex align-items-center'>
           <Heart class='pr-10 d-inline-flex' size='3.1rem' />
           <div class='font-size-16 line-height-normal'>Donate</div>
         </div>
-      </div>
+      </div> -->
       <div class='pointer my-5 rounded' use:click={loginButton}>
         <div class='px-20 py-10 d-flex align-items-center'>
-          {#if anilistClient.userID?.viewer?.data?.Viewer}
+          {#if Helper.getUser()}
             <span class='rounded mr-10'>
-              <img src={anilistClient.userID.viewer.data.Viewer.avatar.medium} class='h-30 rounded' alt='logo' />
+              <img src={Helper.getUserAvatar()} class='h-30 rounded' alt='logo' />
             </span>
-            <div class='font-size-16 login-image-text'>Logout</div>
+            <div class='font-size-16 login-image-text'>Profiles</div>
           {:else}
             <LogIn class='pr-10 d-inline-flex' size='3.1rem' />
-            <div class='font-size-16 line-height-normal'>Login With AniList</div>
+            <div class='font-size-16 line-height-normal'>Login</div>
           {/if}
         </div>
       </div>
@@ -158,7 +149,7 @@
           <div class='col-sm-3 d-none d-sm-flex' />
           <div class='col-sm-6 d-flex justify-content-center flex-column'>
             <h1 class='font-weight-bold text-white title'>Changelog</h1>
-            <div class='font-size-18 text-muted'>New updates and improvements to Miru.</div>
+            <div class='font-size-18 text-muted'>New updates and improvements to Migu.</div>
           </div>
         </div>
         {#await changeLog}

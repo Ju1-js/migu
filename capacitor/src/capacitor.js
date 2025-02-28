@@ -82,16 +82,17 @@ IPC.on('dialog', async () => {
   IPC.emit('path', base + path.join(''))
 })
 
-// schema: miru://key/value
+// schema: migu://key/value
 const protocolMap = {
   auth: token => sendToken(token),
+  malauth: token => sendMalToken(token),
   anime: id => IPC.emit('open-anime', id),
   w2g: link => IPC.emit('w2glink', link),
   schedule: () => IPC.emit('schedule'),
-  donate: () => Browser.open({ url: 'https://github.com/sponsors/ThaUnknown/' })
+  donate: () => Browser.open({ url: 'https://github.com/sponsors/NoCrypt/' })
 }
 
-const protocolRx = /miru:\/\/([a-z0-9]+)\/(.*)/i
+const protocolRx = /migu:\/\/([a-z0-9]+)\/(.*)/i
 
 function handleProtocol (text) {
   const match = text.match(protocolRx)
@@ -104,6 +105,17 @@ function sendToken (line) {
     if (token.endsWith('/')) token = token.slice(0, -1)
     IPC.emit('altoken', token)
   }
+}
+
+function sendMalToken (line) {
+  let code = line.split('code=')[1].split('&state')[0]
+  let state = line.split('&state=')[1]
+  if (code && state) {
+    if (code.endsWith('/')) code = code.slice(0, -1)
+    if (state.endsWith('/')) state = state.slice(0, -1)
+    if (state.includes('%')) state = decodeURIComponent(state)
+    IPC.emit('maltoken', code, state)
+  } 
 }
 
 App.getLaunchUrl().then(res => {
@@ -126,11 +138,11 @@ async function updateInsets () {
 }
 updateInsets()
 
-StatusBar.hide()
+//StatusBar.hide()
 StatusBar.setStyle({ style: Style.Dark })
 StatusBar.setOverlaysWebView({ overlay: true })
 
-navigationbar.setUp(true)
+// navigationbar.setUp(true)
 
 // cordova screen orientation plugin is also used, and it patches global screen.orientation.lock
 

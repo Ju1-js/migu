@@ -1,5 +1,5 @@
 :root {
-  --accent-color: #e5204c;
+  --accent-color: #20a2ff;
   --dm-link-text-color: var(--dm-muted-text-color) !important;
   --dm-link-text-color-hover: var(--dm-text-color) !important;
   --base-html-font-size: 50%;
@@ -28,9 +28,10 @@
   --banner-gradient-left: linear-gradient(90deg, #17191D 0%, rgba(23, 25, 29, 0.5) 75%, rgba(25, 28, 32, 0) 100%);
   --torrent-card-gradient: linear-gradient(90deg, #17191C 32%, rgba(23, 25, 28, 0.90) 100%);
   --episode-card-gradient: linear-gradient(180deg, rgba(0, 0, 0, 0) 77.08%, rgba(0, 0, 0, 0.7) 100%);
-  --episode-preview-card-gradient: linear-gradient(180deg, #0000 0%, #25292f00 80%, #25292f 95%, #25292f 100%);
+  --episode-preview-card-gradient: linear-gradient(180deg, #0000 0%, #25292f00 80%, #25292f 100%);
   --preview-card-gradient: linear-gradient(180deg, #0000 0%, #25292f00 80%, #25292fe3 95%, #25292f 100%);
   --section-end-gradient: linear-gradient(270deg, #17191cff 0%, #17191c00 100%);
+  --dark-color-dim-hsl: var(--dark-color-base-hue), var(--dark-color-base-saturation), 8%;
   color-scheme: dark;
 }
 
@@ -96,8 +97,8 @@ a[href]:active, button:not([disabled]):active, fieldset:not([disabled]):active, 
 }
 
 [data-sonner-toaster][data-theme='dark'] {
-  --normal-bg: var(--dark-color) !important;
-  --normal-border: none !important;
+  --normal-bg: var(--dark-color-light) !important;
+  --normal-border: rgba(128, 128, 128, 0.297) !important;
   --normal-text: var(--dm-base-text-color) !important;
 
   /* --success-bg: var(--success-color) !important; */
@@ -115,6 +116,10 @@ a[href]:active, button:not([disabled]):active, fieldset:not([disabled]):active, 
 
 .z-100 {
   z-index: 100;
+}
+
+.z-101 {
+  z-index: 101;
 }
 
 .text-dark-light {

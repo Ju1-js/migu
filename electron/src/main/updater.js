@@ -1,11 +1,13 @@
 import { autoUpdater } from 'electron-updater'
 import { ipcMain, shell } from 'electron'
 
-ipcMain.on('update', () => {
-  autoUpdater.checkForUpdatesAndNotify()
+autoUpdater.autoDownload = false
+ipcMain.on('update', async () => {
+  await autoUpdater.checkForUpdates()
 })
 
-autoUpdater.checkForUpdatesAndNotify()
+// ipcMain.on('quit-and-install') is on electron/src/main/app.js#L138
+
 export default class Updater {
   hasUpdate = false
   window
@@ -24,6 +26,10 @@ export default class Updater {
       this.hasUpdate = true
       window.webContents.send('update-downloaded', true)
     })
+    ipcMain.on('update-download', async () => {
+      window.webContents.send('update-downloading', true)
+      await autoUpdater.downloadUpdate()
+    })
   }
 
   install(forceRunAfter = false) {
@@ -35,7 +41,7 @@ export default class Updater {
         } catch (e) {}
         autoUpdater.quitAndInstall(true, forceRunAfter)
       })
-      if (process.platform === 'darwin') shell.openExternal('https://miru.watch/download')
+      if (process.platform === 'darwin') shell.openExternal('https://github.com/NoCrypt/migu/releases/latest')
       this.hasUpdate = false
       return true
     }

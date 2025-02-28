@@ -1,41 +1,57 @@
 <script>
   import { getContext } from 'svelte'
-  import { media } from '../views/Player/MediaHandler.svelte'
+  import { rss } from '@/views/TorrentSearch/TorrentModal.svelte'
+  import { media } from '@/views/Player/MediaHandler.svelte'
+  import { profileView } from './Profiles.svelte'
   import { click } from '@/modules/click.js'
   import IPC from '@/modules/ipc.js'
   import NavbarLink from './NavbarLink.svelte'
   import { MagnifyingGlass } from 'svelte-radix'
-  import { Users, Clock, Settings, Heart, ListVideo } from 'lucide-svelte'
+  import { Users, Clock, Settings, Heart, ListVideo, House } from 'lucide-svelte'
   const view = getContext('view')
   export let page
-  function close () {
-    $view = null
-    page = 'home'
+
+  function noModals(i = true) {
+    if (i) $view = null; 
+    else  $view = $view===null ? $media.media : null;
+    
+    $rss = null
   }
+
+  // function close () {
+  //   $view = null
+  //   page = 'home'
+  // }
 </script>
 
-<nav class='navbar navbar-fixed-bottom d-block d-md-none border-0 bg-dark'>
+<nav class='navbar navbar-fixed-bottom d-block d-md-none border-0 bg-dark' style='border-top: 1.5px #fff2 solid !important;'>
   <div class='navbar-menu h-full d-flex flex-row justify-content-center align-items-center m-0 pb-5' class:animate={page !== 'player'}>
-    <img src='./logo_filled.png' class='w-50 h-50 m-10 pointer p-5' alt='ico' use:click={close} />
-    <NavbarLink click={() => { page = 'search' }} _page='search' css='ml-auto' icon='search' {page} let:active>
-      <MagnifyingGlass size='2rem' class='flex-shrink-0 p-5 w-30 h-30 m-5 rounded' stroke-width={active ? '2' : '0'} stroke='currentColor' />
+    <!-- <img src='./logo_filled.png' class='w-50 h-50 m-10 pointer p-5' alt='ico' use:click={close} /> -->
+    <NavbarLink click={() => { page = 'home'; noModals()}} _page='home' icon='home' {page} let:active>
+      <House size='3.3rem' class='flex-shrink-0 p-5 m-5 rounded' strokeWidth='2.5' color={active ? 'currentColor':'#888'} />
     </NavbarLink>
-    <NavbarLink click={() => { page = 'schedule' }} _page='schedule' icon='schedule' {page} let:active>
-      <Clock size='2rem' class='flex-shrink-0 p-5 w-30 h-30 m-5 rounded' strokeWidth={active ? '3.5' : '2'} />
+    <NavbarLink click={() => { page = 'search'; noModals()}} _page='search' css='ml-auto' icon='search' {page} overlay={($view || $profileView || $rss) && 'active'} let:active>
+      <MagnifyingGlass size='3.3rem' class='flex-shrink-0 p-5 m-5 rounded' stroke-width={active ? '1' : '0.9'} style="color: {page==='search' ? 'currentColor':'#888'}" stroke='currentColor'/>
     </NavbarLink>
     {#if $media?.media}
-      <NavbarLink click={() => { $view = $media.media }} icon='queue_music' {page} let:active>
-        <ListVideo size='2rem' class='flex-shrink-0 p-5 w-30 h-30 m-5 rounded' strokeWidth={active ? '3.5' : '2'} />
+      {@const currentMedia = $view}
+      {@const active = $view && !$profileView && 'active'}
+      <NavbarLink click={() => { $view = (currentMedia?.id === $media.media.id && active ? null : $media.media) }} icon='queue_music' {page} overlay={active} nowPlaying={$view === $media.media} let:active>
+        <ListVideo size='3.3rem' class='flex-shrink-0 p-5 m-5 rounded' strokeWidth='2.5' color={active ? 'currentColor':'#888'} />
+      </NavbarLink>
+    {:else}
+      <NavbarLink click={() => { page = 'schedule'; noModals() }} _page='schedule' icon='schedule' {page} overlay={($view || $profileView || $rss) && 'active'} let:active>
+        <Clock size='3.3rem' class='flex-shrink-0 p-5 m-5 rounded' strokeWidth='2.5' color={active ? 'currentColor':'#888'} />
       </NavbarLink>
     {/if}
-    <NavbarLink click={() => { page = 'watchtogether' }} _page='watchtogether' icon='groups' {page} let:active>
-      <Users size='2rem' class='flex-shrink-0 p-5 w-30 h-30 m-5 rounded' strokeWidth={active ? '3.5' : '2'} />
+    <NavbarLink click={() => { page = 'watchtogether'; noModals() }} _page='watchtogether' icon='groups' {page} overlay={($view || $profileView || $rss) && 'active'} let:active>
+      <Users size='3.3rem' class='flex-shrink-0 p-5 m-5 rounded' strokeWidth='2.5' color={active ? 'currentColor':'#888'} />
     </NavbarLink>
-    <NavbarLink click={() => { IPC.emit('open', 'https://github.com/sponsors/ThaUnknown/') }} icon='favorite' css='ml-auto donate' {page} let:active>
-      <Heart size='2rem' class='flex-shrink-0 p-5 w-30 h-30 m-5 rounded donate' strokeWidth={active ? '3.5' : '2'} fill='currentColor' />
-    </NavbarLink>
-    <NavbarLink click={() => { page = 'settings' }} _page='settings' icon='settings' {page} let:active>
-      <Settings size='2rem' class='flex-shrink-0 p-5 w-30 h-30 m-5 rounded' strokeWidth={active ? '3.5' : '2'} />
+    <!-- <NavbarLink click={() => { IPC.emit('open', 'https://github.com/sponsors/ThaUnknown/') }} icon='favorite' css='ml-auto donate' {page} let:active>
+      <Heart size='3.3rem' class='flex-shrink-0 p-5 m-5 rounded donate' strokeWidth='2.5' fill={active ? 'currentColor':'#888'} />
+    </NavbarLink> -->
+    <NavbarLink click={() => { page = 'settings'; noModals() }} _page='settings' icon='settings' css='ml-auto' {page} overlay={($view || $profileView || $rss) && 'active'} let:active>
+      <Settings size='3.3rem' class='flex-shrink-0 p-5 m-5 rounded' strokeWidth='2.5' color={active ? 'currentColor':'#888'} />
     </NavbarLink>
   </div>
 </nav>

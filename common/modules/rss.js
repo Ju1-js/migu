@@ -27,10 +27,11 @@ export function parseRSSNodes (nodes) {
 }
 
 const rssmap = {
-  SubsPlease: settings.value.toshoURL + 'rss2?qx=1&q="[SubsPlease] "',
+  'ASW [Small Size]': settings.value.toshoURL + 'rss2?qx=1&q="[ASW]"',
+  'Judas [Small Size]': settings.value.toshoURL + 'rss2?qx=1&q="[Judas]"',
+  'SubsPlease': settings.value.toshoURL + 'rss2?qx=1&q="[SubsPlease] "',
   'Erai-raws [Multi-Sub]': settings.value.toshoURL + 'rss2?qx=1&q="[Erai-raws] "',
-  'Yameii [Dubbed]': settings.value.toshoURL + 'rss2?qx=1&q="[Yameii] "',
-  'Judas [Small Size]': settings.value.toshoURL + 'rss2?qx=1&q="[Judas] "'
+  'Yameii [Dubbed]': settings.value.toshoURL + 'rss2?qx=1&q="[Yameii] "'
 }
 export function getReleasesRSSurl (val) {
   const rss = rssmap[val] || val
@@ -106,7 +107,7 @@ class RSSMediaManager {
 
     const res = await Promise.all(await results)
     const newReleases = res.filter(({ date }) => date > oldDate)
-    debug(`Found ${newReleases.length} new releases, notifying...`)
+    debug(`Found ${newReleases?.length} new releases, notifying...`)
 
     for (const { media, parseObject, episode } of newReleases) {
       const options = {
@@ -132,7 +133,7 @@ class RSSMediaManager {
         try {
           res.episodeData = (await getEpisodeMetadataForMedia(res.media))?.[res.episode]
         } catch (e) {
-          debug(`Warn: failed fetching episode metadata for ${res.media.title.userPreferred} episode ${res.episode}: ${e.stack}`)
+          debug(`Warn: failed fetching episode metadata for ${res.media.title?.userPreferred} episode ${res.episode}: ${e.stack}`)
         }
       }
       res.date = items[i].date

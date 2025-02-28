@@ -1,124 +1,135 @@
 <p align="center">
-	<a href="https://github.com/ThaUnknown/miru">
-		<img src="./web/static/logo_filled.svg" width="200">
+	<a href="https://github.com/NoCrypt/migu">
+		<img src="./common/public/logo_filled.png" width="250">
 	</a>
 </p>
-<h1 align="center"><b>Miru</b></h1>
+<h1 align="center"><b>Migu</b></h1>
 
 <h4 align="center"><b>Stream anime torrents, real-time with no waiting for downloads</b></h4>
 
-<p align="center">
-  <a href="https://miru.watch/#about">About</a> •
-  <a href="https://miru.watch/features/">Features</a> •
-  <a href="https://miru.watch/faq/">Frequently Asked Questions</a> •
-  <a href="#building-and-development">Building and Development</a> •
-  <a href="https://miru.watch/download/">Download</a>
-</p>
-<p align="center">
-  <img src="./docs/out.gif" alt="showcase"><br>
-  <a href="https://discord.gg/Z87Nh7c4Ac">
-    <img src="https://img.shields.io/discord/953341991134064651?style=flat-square" alt="chat">
-  </a>
-  <a href="https://miru.watch/download/">
-    <img alt="GitHub all releases" src="https://img.shields.io/github/downloads/ThaUnknown/miru/total?style=flat-square">
-  </a>
-</p>
+**Migu** is a fork of [Miru](https://github.com/ThaUnknown/miru/) that focused on better **mobile** experience with added features and polished the experience by a mile.
 
-## **About**
-A pure JS BitTorrent streaming environment, with a built-in list manager. Imagine qBit + Taiga + MPV, all in a single package, but streamed real-time. Completly ad free with no tracking/data collection.
-
-This app is meant to feel look, work and perform like a streaming website/app, while providing all the advantages of torrenting, like file downloads, higher download speeds, better video quality and quicker releases.
-
-Unlike qBit's sequential, seeking into undownloaded data will prioritise downloading that data, instead of flat out closing MPV.
 ## **Features**
-### **Anime:**
-- full AniList integration
-  - filter anime by name, genre, season, year, format, status
-  - view anime on your planning and watching list
-  - add and remove anime from your planning list
-  - automatically mark episodes as complete as you watch them
-  - view trailers/previews for anime
-  - score anime
-  - view anime relations
-- automatically find torrents for desired episodes
-- automatically detect what anime a torrent is
-- view latest releases on any custom RSS
-- airing schedule
-- find anime by image [just paste an image into the app]
-### **Video:**
-- full subtitle support
-  - support for softcoded subtitles
-  - support for external subtitle files
-  - support for VTT, SSA, ASS, SUB, TXT subtitles
-  - subtitle display in PiP
-- keybinds for all functions:
-  - **S** - seek forwards 90 seconds [skip opening]
-  - **R** - seek backwards 90 seconds
-  - **→** - seek forwards 2 seconds
-  - **←** - seek backwards 2 seconds
-  - **↑** - increase volume
-  - **↓** - decrease volume
-  - **M** - mute volume
-  - **C** - cycle through subtitle tracks
-  - **N** - play next episode [if available]
-  - **B** - play last episode [if available]
-  - **F** - toggle fullscreen
-  - **P** - toggle picture in picture
-  - **[** - increase playback speed
-  - **]** - decrease playback speed
-  - **\\** - reset playback speed to 1
-  - **I** - view video stats for nerds
-  - **`** - open keybinds UI
-- editable keybinds **`** allows drag dropping any key
-- miniplayer
-- media session display
-- media keys support
-- Discord rich pressence
-- preview thumbnails
-- pause on lost focus
-- autoplay next episode
-- multi-audio support
-- torrent download progress on the seek bar
-### **Torrent:**
-- select downloads folder
-- specify download/upload speeds
-- support for most popular BEP's
-- support for custom torrent RSS feeds for latest releases
-- change what resolution to find torrents in
-- stream real-time with no waiting for downloads
-- support for custom extensions for custom sources and trackers
 
-## **Linux Installation**
+Includes all original Miru features, plus:
 
-### Arch
+- Toggleable AMOLED theme
+- Optional Discord Rich Presence
+- Optional Auto-update
+- Free APK download on GitHub Releases
+- Split Android builds by CPU architecture
+- Auto-update with automatic CPU architecture selection
+- Independent seeding speed control
+- Close button on miniplayer
+- Miniplayer doesn’t load on startup
+- Swipe gestures for brightness and volume control on Android
+- Scroll wheel for volume control on PC
+- Redesigned Android navigation bar for improved usability
+- Correctly implemented fullscreen mode on Android
+- Safe area padding and margin adjustments on Android to avoid overlap with the status bar
+- Imported Default Extension and RSS feed settings from PC to Android
+- Auto fullscreen video playback on Android
+- Scrollable RSS feed for more anime visibility on Android
+- Double-tap to seek on Android
+- Default seek duration set to 5 seconds
+- Volume and brightness indicators for swipe and scroll gestures
+- Torrent sorting by size (+seeders) to reduce bandwidth usage
+- Default new release RSS set to "ASW" to minimize bandwidth usage
+- Moved toast close button to the bottom for better reachability on Android
+- Disabled smooth scrolling by default due to poor performance on my device
+- Gesture lock on Android to prevent misclick
 
-If you use paru:
-```bash
-paru -S miru-bin
-```
+<br>
+<details>
+<summary><b>Removed and Implemented features on miru</b></summary>
 
-If you use yay:
+- Proper back button functionality on Android ([better implementation on miru](https://github.com/ThaUnknown/miru/commit/32d1d03d11b380249e1f01b4cbbcb2f22591c403))
+- Double-click back button to exit (removed for now due to above)
+- Customizable seek duration ([implemented on miru](https://github.com/ThaUnknown/miru/commit/246e713c6e0eb3522d91dea9ecd2e9e29676ccbc) **without PR's author**) [[PR](https://github.com/ThaUnknown/miru/pull/391)]
+- Right click or long press on RSS Section will open the anime episode list ([implemented on miru](https://github.com/ThaUnknown/miru/commit/1d05a71b39f725d7e193c35041818fc9a3857ac5))
+- Toggleable auto skip intro/outro ([implemented on miru](https://github.com/ThaUnknown/miru/commit/848726bd2397b857a7c6e954e27e50130dd86db8)) (**Possibly that's inspired by my commit since it includes indonesia langugage and using `:active` instead of `:hover`**)
+- Home section re-ordering on android ([implemented on miru](https://github.com/ThaUnknown/miru/commit/a50b78590f2d024d5f2237edca44a1ed16d1aa2f)) (**Possibly that's [my commit](https://github.com/NoCrypt/migu/commit/2ff58ca5bbd3390baaf87ac7a20b042810b549d1)**)
 
-```bash
-yay -S miru-bin
-```
+<br>
 
-### Debian/Ubuntu
+> Hey ThaUnknown, It's fine if you want to commit features from this repo. But please if possible co-author the people who made said features. I genuinely kinda feel bad for the guy who [PR'ed](https://github.com/ThaUnknown/miru/pull/391) the Seek Duration on your repo.
 
-- Download the `linux-Miru-version.deb` from the [releases](https://github.com/ThaUnknown/miru/releases/latest) page.
-- Install the deb file with package manager.
-```bash
-apt install linux-Miru-*.deb
-```
+</details>
+
+
 
 ## **Building and Development**
 
-*good luck*
+<sub>[~~*good luck he said lol.*~~](https://github.com/ThaUnknown/miru/#:~:text=Building%20and%20Development-,good%20luck,-Dependencies%3A)</sub>
 
-Dependencies:
- - Node 16 or above
- - PNPM
- - Docker
- - Android Debug Bridge
- - Java 18 or above [probably?]
- - maybe others... have fun.
+<u>***Please do! I highly encourage this!***</u>
+
+### Requirements
+- PNPM (or any package manager)
+- NodeJS 20+
+- Docker (with WSL support if you're on Windows)
+- ADB
+- Android Studio (SDK 34)
+- Java 21 (JDK)
+
+### Building for PC (Electron)
+1. Navigate to the Electron directory:
+   ```bash
+   cd electron
+   ```
+2. Install dependencies:
+   ```bash
+   pnpm install
+   ```
+3. Development:
+   ```bash
+   pnpm start
+   ```
+4. Release:
+   ```bash
+   pnpm build
+   ```
+
+### Building for Android (Capacitor)
+1. Navigate to the Capacitor directory:
+   ```bash
+   cd capacitor
+   ```
+2. Install dependencies:
+   ```bash
+   pnpm install
+   ```
+3. Check what's missing:
+   ```bash
+   pnpm exec cap doctor
+   ```
+4. (First time only) Build native code:
+   - Windows:
+     ```bash
+     pnpm build:native-win
+     ```
+   - Linux:
+     ```bash
+     pnpm build:native
+     ```
+5. (Optional) Generate assets (if built-in forked capacitor/assets doesn’t work):
+   ```bash
+   pnpm dlx @capacitor/assets generate --iconBackgroundColor #20a2ff --iconBackgroundColorDark #20a2ff --splashBackgroundColor #20a2ff --splashBackgroundColorDark #20a2ff --android
+   ```
+6. Open the Android project:
+   ```bash
+   pnpm exec cap open android
+   ```
+7. Connect your phone with ADB.
+8. Development:
+   ```bash
+   pnpm dev:start
+   ```
+9. Release:
+   ```bash
+   pnpm build:app
+   ```
+
+## License
+
+This project acknowledges and complies with the GPLv3 license.

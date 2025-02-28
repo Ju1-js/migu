@@ -1,7 +1,7 @@
 <script>
   import { click } from '@/modules/click.js'
   import { sections } from '@/modules/sections.js'
-  import { SUPPORTS } from '@/modules/support.js'
+  import { SUPPORTS } from '@/modules/support.js';
   import { ArrowDown, ArrowDownUp, ArrowUp, Trash2 } from 'lucide-svelte'
 
   const allowedHomeSections = sections.map(({ title }) => title)
@@ -17,15 +17,19 @@
 
   $: {
     if (draggingItemIndex != null && hoveredItemIndex != null && draggingItemIndex !== hoveredItemIndex) {
-      swapItem(draggingItemIndex, hoveredItemIndex)
+      [homeSections[draggingItemIndex], homeSections[hoveredItemIndex]] = [homeSections[hoveredItemIndex], homeSections[draggingItemIndex]]
 
       draggingItemIndex = hoveredItemIndex
     }
   }
 
-  function swapItem (a, b) {
-    b = Math.min(homeSections.length - 1, Math.max(0, b))
-    ;[homeSections[a], homeSections[b]] = [homeSections[b], homeSections[a]]
+  function moveItem(index, direction) {
+    if (direction === 'up' && index > 0) {
+      [homeSections[index], homeSections[index - 1]] = [homeSections[index - 1], homeSections[index]];
+    } else if (direction === 'down' && index < homeSections.length - 1) {
+      [homeSections[index], homeSections[index + 1]] = [homeSections[index + 1], homeSections[index]];
+    }
+    homeSections = homeSections; // Trigger reactivity
   }
 </script>
 
@@ -52,7 +56,7 @@
     class:tp={draggingItem === item}
     draggable='true'
     role='menuitem'
-    tabindex='0'
+    tabindex='-1'
     on:dragstart={({ clientY, target }) => {
       mouseYCoordinate = clientY
       draggingItem = item
@@ -72,13 +76,17 @@
       </div>
     {:else}
       <div class='input-group-prepend'>
-        <button use:click={() => swapItem(index, index - 1)} class='input-group-text d-flex align-items-center px-5 pointer'><ArrowUp size='1.8rem' /></button>
+        <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <button on:click={() => moveItem(index, 'up')} class='input-group-text d-flex justify-content-center px-5 font-size-20 pointer'><ArrowUp size='1.8rem' /></button>
       </div>
       <div class='input-group-prepend'>
-        <button use:click={() => swapItem(index, index + 1)} class='input-group-text d-flex align-items-center px-5 pointer'><ArrowDown size='1.8rem' /></button>
+        <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <button on:click={() => moveItem(index, 'down')} class='input-group-text d-flex justify-content-center px-5 font-size-20 pointer'><ArrowDown size='1.8rem' /></button>
       </div>
     {/if}
-    <select class='form-control bg-dark w-300 mw-full' bind:value={homeSections[index]}>
+    <select class='form-control bg-dark w-400 mw-full' bind:value={homeSections[index]}>
       {#each allowedHomeSections as section}
         <option>{section}</option>
       {/each}
@@ -102,7 +110,11 @@
     opacity: 0;
   }
 
-  .grab{
-    cursor: grab;
-  }
+    .grab{
+      cursor: grab;
+    }
+    
+    .pointer {
+      cursor: pointer;
+    }
 </style>

@@ -73,6 +73,7 @@
     <option value=''>None</option>
     <option value='eng' selected>English</option>
     <option value='jpn'>Japanese</option>
+    <option value='idn'>Indonesian</option>
     <option value='chi'>Chinese</option>
     <option value='por'>Portuguese</option>
     <option value='spa'>Spanish</option>
@@ -96,33 +97,36 @@
     <option value='idn'>Indonesian</option>
   </select>
 </SettingCard>
-<SettingCard title='Preferred Audio Language' description="What audio language to automatically select when a video is loaded if it exists. This won't find torrents with this language automatically. If not found defaults to Japanese.">
-  <select class='form-control bg-dark w-300 mw-full' bind:value={settings.audioLanguage}>
-    <option value='eng'>English</option>
-    <option value='jpn' selected>Japanese</option>
-    <option value='chi'>Chinese</option>
-    <option value='por'>Portuguese</option>
-    <option value='spa'>Spanish</option>
-    <option value='ger'>German</option>
-    <option value='pol'>Polish</option>
-    <option value='cze'>Czech</option>
-    <option value='dan'>Danish</option>
-    <option value='gre'>Greek</option>
-    <option value='fin'>Finnish</option>
-    <option value='fre'>French</option>
-    <option value='hun'>Hungarian</option>
-    <option value='ita'>Italian</option>
-    <option value='kor'>Korean</option>
-    <option value='dut'>Dutch</option>
-    <option value='nor'>Norwegian</option>
-    <option value='rum'>Romanian</option>
-    <option value='rus'>Russian</option>
-    <option value='slo'>Slovak</option>
-    <option value='swe'>Swedish</option>
-    <option value='ara'>Arabic</option>
-    <option value='idn'>Indonesian</option>
-  </select>
-</SettingCard>
+{#if 'audioTracks' in HTMLVideoElement.prototype}
+  <SettingCard title='Preferred Audio Language' description="What audio language to automatically select when a video is loaded if it exists. This won't find torrents with this language automatically. If not found defaults to Japanese.">
+    <select class='form-control bg-dark w-300 mw-full' bind:value={settings.audioLanguage}>
+      <option value='eng'>English</option>
+      <option value='jpn' selected>Japanese</option>
+      <option value='chi'>Chinese</option>
+      <option value='idn'>Indonesian</option>
+      <option value='por'>Portuguese</option>
+      <option value='spa'>Spanish</option>
+      <option value='ger'>German</option>
+      <option value='pol'>Polish</option>
+      <option value='cze'>Czech</option>
+      <option value='dan'>Danish</option>
+      <option value='gre'>Greek</option>
+      <option value='fin'>Finnish</option>
+      <option value='fre'>French</option>
+      <option value='hun'>Hungarian</option>
+      <option value='ita'>Italian</option>
+      <option value='kor'>Korean</option>
+      <option value='dut'>Dutch</option>
+      <option value='nor'>Norwegian</option>
+      <option value='rum'>Romanian</option>
+      <option value='rus'>Russian</option>
+      <option value='slo'>Slovak</option>
+      <option value='swe'>Swedish</option>
+      <option value='ara'>Arabic</option>
+      <option value='idn'>Indonesian</option>
+    </select>
+  </SettingCard>
+{/if}
 
 <h4 class='mb-10 font-weight-bold'>Playback Settings</h4>
 <SettingCard title='Autoplay Next Episode' description='Automatically starts playing next episode when a video ends.'>
@@ -137,7 +141,7 @@
     <label for='player-pause'>{settings.playerPause ? 'On' : 'Off'}</label>
   </div>
 </SettingCard>
-<SettingCard title='Auto-Complete Episodes' description='Automatically marks episodes as complete on AniList when you finish watching them. Requires AniList login.'>
+<SettingCard title='Auto-Complete Episodes' description='Automatically marks episodes as complete on AniList or MyAnimeList when you finish watching them. You must be logged in.'>
   <div class='custom-switch'>
     <input type='checkbox' id='player-autocomplete' bind:checked={settings.playerAutocomplete} />
     <label for='player-autocomplete'>{settings.playerAutocomplete ? 'On' : 'Off'}</label>
@@ -149,24 +153,54 @@
     <label for='player-watchedMiru'>{settings.watchedUsing ? 'On' : 'Off'}</label>
   </div>
 </SettingCard>
+<SettingCard title='Auto-Skip Intro/Outro' description='Automatically skip intro and outro. Warning, sometimes it can skip wrong part of the episode and you can&apos;t view Intro/Outro at all.'>
+  <div class='custom-switch'>
+    <input type='checkbox' id='player-auto-skip' bind:checked={settings.playerAutoSkip} />
+    <label for='player-auto-skip'>{settings.playerAutoSkip ? 'On' : 'Off'}</label>
+  </div>
+</SettingCard>
+<SettingCard title='Seek Duration' description='Seconds to seek an episode with arrow keys'>
+  <div class='input-group w-100 mw-full'>
+    <input type='number' bind:value={settings.playerSeek} min='1' max='120' class='form-control text-right bg-dark' />
+    <div class='input-group-append'>
+      <span class='input-group-text bg-dark'>s</span>
+    </div>
+  </div>
+</SettingCard>
 <SettingCard title='Deband Video' description='Reduces banding on dark and compressed videos. High performance impact, not recommended for high quality videos.'>
   <div class='custom-switch'>
     <input type='checkbox' id='player-deband' bind:checked={settings.playerDeband} />
     <label for='player-deband'>{settings.playerDeband ? 'On' : 'Off'}</label>
   </div>
 </SettingCard>
-<SettingCard title='Seek Duration' description='Seconds to skip forward or backward when using the seek buttons or keyboard shortcuts. Higher values might negatively impact buffering speeds.'>
-  <div class='input-group w-100 mw-full'>
-    <input type='number' inputmode='numeric' pattern={'[0-9]*'} bind:value={settings.playerSeek} min='1' max='50' class='form-control text-right bg-dark' />
-    <div class='input-group-append'>
-      <span class='input-group-text bg-dark'>sec</span>
+{#if SUPPORTS.isAndroid}
+  <SettingCard title='Swipe Gestures' description='Swiping the video vertically will change the brightness and volume.'>
+    <div class='custom-switch'>
+      <input type='checkbox' id='swipe-gestures' bind:checked={settings.swipeGestures} />
+      <label for='swipe-gestures'>{settings.swipeGestures ? 'On' : 'Off'}</label>
     </div>
-  </div>
-</SettingCard>
-<SettingCard title='Auto-Skip Intro/Outro' description='Attempt to automatically skip intro and outro. This WILL sometimes skip incorrect chapters, as some of the chapter data is community sourced.'>
-  <div class='custom-switch'>
-    <input type='checkbox' id='player-skip' bind:checked={settings.playerSkip} />
-    <label for='player-skip'>{settings.playerSkip ? 'On' : 'Off'}</label>
+  </SettingCard>
+{:else}
+  <SettingCard title='Volume Scroll' description='Scrolling the mouse wheel will change the volume.'>
+    <div class='custom-switch'>
+      <input type='checkbox' id='volume-scroll' bind:checked={settings.volumeScroll} />
+      <label for='volume-scroll'>{settings.volumeScroll ? 'On' : 'Off'}</label>
+    </div>
+  </SettingCard>
+  {#if settings.volumeScroll}
+    <SettingCard title='Volume Scroll Step' description='How big is the volume scroll change the volume.'>
+      <div class='input-group w-100 mw-full'>
+        <input type='number' bind:value={settings.volumeScrollStep} min='1' max='50' class='form-control text-right bg-dark' />
+        <div class='input-group-append'>
+          <span class='input-group-text bg-dark'>%</span>
+        </div>
+      </div>
+    </SettingCard>
+  {/if}
+{/if}
+<SettingCard title='Playback Rate Step' description='How fast does the playback rate changes.'>
+  <div class='input-group w-100 mw-full'>
+    <input type='number' step='0.1' bind:value={settings.playbackRateStep} min='0.1' max='3' class='form-control text-right bg-dark' />
   </div>
 </SettingCard>
 
@@ -179,7 +213,7 @@
 </SettingCard>
 
 <h4 class='mb-10 font-weight-bold'>External Player Settings</h4>
-<SettingCard title='Enable External Player' description='Tells Miru to open a custom user-picked external video player to play video, instead of using the built-in one.'>
+<SettingCard title='Enable External Player' description='Tells Migu to open a custom user-picked external video player to play video, instead of using the built-in one.'>
   <div class='custom-switch'>
     <input type='checkbox' id='player-external-enabled' bind:checked={settings.enableExternal} />
     <label for='player-external-enabled'>{settings.enableExternal ? 'On' : 'Off'}</label>

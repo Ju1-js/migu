@@ -4,7 +4,6 @@
   import { playAnime } from '@/views/TorrentSearch/TorrentModal.svelte'
   import { client } from '@/modules/torrent.js'
   import { createEventDispatcher } from 'svelte'
-  import { anilistClient } from '@/modules/anilist.js'
   import Subtitles from '@/modules/subtitles.js'
   import { toTS, fastPrettyBytes, videoRx } from '@/modules/util.js'
   import { toast } from 'svelte-sonner'
@@ -12,13 +11,17 @@
   import Seekbar from 'perfect-seekbar'
   import { click } from '@/modules/click.js'
   import VideoDeband from 'video-deband'
+  import Helper from '@/modules/helper.js'
 
   import { w2gEmitter, state } from '../WatchTogether/WatchTogether.svelte'
   import Keybinds, { loadWithDefaults, condition } from 'svelte-keybinds'
   import { SUPPORTS } from '@/modules/support.js'
   import 'rvfc-polyfill'
   import IPC from '@/modules/ipc.js'
-  import { ArrowDown, ArrowUp, Captions, Cast, CircleHelp, Contrast, FastForward, Keyboard, List, ListMusic, ListVideo, Maximize, Minimize, Pause, PictureInPicture, PictureInPicture2, Play, Proportions, RefreshCcw, Rewind, RotateCcw, RotateCw, ScreenShare, SkipBack, SkipForward, Users, Volume1, Volume2, VolumeX } from 'lucide-svelte'
+  import { swipeControls } from '@/modules/swipecontrol.js';
+  import { volumeScroll } from '@/modules/volumescroll.js';
+  import GestureLock from '@/components/GestureLock.svelte';
+  import { ArrowDown, ArrowUp, Captions, Cast, CircleHelp, Contrast, FastForward, Keyboard, List, ListMusic, ListVideo, Maximize, Minimize, Pause, PictureInPicture, PictureInPicture2, Play, Proportions, RefreshCcw, Rewind, RotateCcw, RotateCw, ScreenShare, SkipBack, SkipForward, Users, Volume1, Volume2, VolumeX, RefreshCw, CircleGauge, Minus, Plus, Lock} from 'lucide-svelte'
 
   const emit = createEventDispatcher()
 
@@ -46,6 +49,7 @@
   export let miniplayer = false
   $condition = () => !miniplayer && SUPPORTS.keybinds && !document.querySelector('.modal.show')
   export let page
+  export let overlay
   export let files = []
   $: updateFiles(files)
   let src = null
@@ -74,6 +78,13 @@
   let externalPlayerReady = false
   $: localStorage.setItem('volume', (volume || 0).toString())
   $: safeduration = (isFinite(duration) ? duration : currentTime) || 0
+  $: {
+    if (hidden) {
+      setDiscordRPC(media, video?.currentTime)
+    } else {
+      setDiscordRPC(media, (paused && miniplayer))
+    }
+  }
 
   function checkAudio () {
     if ('audioTracks' in HTMLVideoElement.prototype) {
@@ -107,9 +118,15 @@
   // document.fullscreenElement isn't reactive
   document.addEventListener('fullscreenchange', () => {
     isFullscreen = !!document.fullscreenElement
+    if (!SUPPORTS.isAndroid) return
     if (document.fullscreenElement) {
+      // window.Capacitor.Plugins.StatusBar.hide()
+      window.AndroidFullScreen?.immersiveMode()
       screen.orientation.lock('landscape')
     } else {
+      // window.Capacitor.Plugins.StatusBar.show()
+      window.AndroidFullScreen?.showSystemUI()
+      window.Capacitor.Plugins.StatusBar.setOverlaysWebView({ overlay: true })
       screen.orientation.unlock()
     }
   })
@@ -283,7 +300,8 @@
   }
   const handleVisibility = visibility => {
     if (!video?.ended && $settings.playerPause && !pip) {
-      if (visibility === 'hidden') {
+      hidden = (visibility === 'hidden')
+      if (hidden) {
         visibilityPaused = paused
         paused = true
       } else {
@@ -291,6 +309,7 @@
       }
     }
   }
+  let hidden = false
   let visibilityPaused = true
   document.addEventListener('visibilitychange', () => handleVisibility(document.visibilityState))
   IPC.on('visibilitychange', handleVisibility)
@@ -323,6 +342,14 @@
   function toggleFullscreen () {
     document.fullscreenElement ? document.exitFullscreen() : document.querySelector('.content-wrapper').requestFullscreen()
   }
+
+  function executeSeek(event){
+    console.log(event)
+    const rect = event.target.getBoundingClientRect();
+    seek( (event.clientX - rect.left) < rect.width / 2 ? -$settings.playerSeek : $settings.playerSeek );
+    immersePlayer();
+  }
+
   function skip () {
     const current = findChapter(currentTime)
     if (current) {
@@ -350,17 +377,17 @@
     video.currentTime = targetTime
   }
   function forward () {
-    seek(settings.value.playerSeek)
+    seek($settings.playerSeek)
   }
   function rewind () {
-    seek(-settings.value.playerSeek)
+    seek(-$settings.playerSeek)
   }
   function selectAudio (id) {
     if (id !== undefined) {
       for (const track of video.audioTracks) {
         track.enabled = track.id === id
       }
-      seek(-0.2) // stupid fix because video freezes up when chaging tracks
+      seek(-0.2) // stupid fix because video freezes up when changing tracks
     }
   }
   function selectVideo (id) {
@@ -464,7 +491,7 @@
   }
   let fitWidth = false
   let showKeybinds = false
-  loadWithDefaults({
+  const ld = () => loadWithDefaults({
     KeyX: {
       fn: () => screenshot(),
       id: 'screenshot_monitor',
@@ -480,7 +507,10 @@
       desc: 'Toggle Stats'
     },
     Backquote: {
-      fn: () => (showKeybinds = !showKeybinds),
+      fn: () => {
+        ld();
+        (showKeybinds = !showKeybinds);
+      },
       id: 'help_outline',
       icon: CircleHelp,
       type: 'icon',
@@ -608,14 +638,14 @@
       desc: 'Volume Down'
     },
     BracketLeft: {
-      fn: () => { playbackRate = video.defaultPlaybackRate -= 0.1 },
+      fn: () => {if(playbackRate.toFixed(1) > $settings.playbackRateStep.toFixed(1)) playbackRate = video.defaultPlaybackRate -= $settings.playbackRateStep},
       id: 'history',
       icon: RotateCcw,
       type: 'icon',
       desc: 'Decrease Playback Rate'
     },
     BracketRight: {
-      fn: () => { playbackRate = video.defaultPlaybackRate += 0.1 },
+      fn: () => {if(playbackRate <= 10) playbackRate = video.defaultPlaybackRate += $settings.playbackRateStep},
       id: 'update',
       icon: RotateCw,
       type: 'icon',
@@ -651,6 +681,7 @@
     container.append(canvas)
     return { stream: canvas.captureStream(), destroy }
   }
+  ld()
 
   // function initCast (event) {
   //   // these quality settings are likely to make cast overheat, oh noes!
@@ -808,7 +839,7 @@
   }
 
   let currentSkippable = null
-  $: currentSkippable && settings.value.playerAutoSkip && skip()
+  $: currentSkippable && $settings.playerAutoSkip && skip()
   function checkSkippableChapters () {
     const current = findChapter(currentTime)
     if (current) {
@@ -965,8 +996,8 @@
       if (media?.media?.episodes || media?.media?.nextAiringEpisode?.episode) {
         if (media.media.episodes || media.media.nextAiringEpisode?.episode > media.episode) {
           completed = true
+          Helper.updateEntry(media)
           externalPlayerReady = false
-          anilistClient.alEntry(media)
         }
       }
     }
@@ -988,7 +1019,7 @@
         console.warn('A network error caused the video download to fail part-way.', target.error)
         toast.error('Video Network Error', {
           description: 'A network error caused the video download to fail part-way. Dismiss this toast to reload the video.',
-          duration: 10000,
+          duration: Infinity,
           onDismiss: () => target.load()
         })
         break
@@ -996,7 +1027,7 @@
         console.warn('The video playback was aborted due to a corruption problem or because the video used features your browser did not support.', target.error)
         toast.error('Video Decode Error', {
           description: 'The video playback was aborted due to a corruption problem. Dismiss this toast to reload the video.',
-          duration: 10000,
+          duration: Infinity,
           onDismiss: () => target.load()
         })
         break
@@ -1033,7 +1064,83 @@
       document.querySelector('[data-name=\'toggleFullscreen\']')?.focus()
     }
   }
+
+  let isLocked = false;
+  function setDiscordRPC (np = media, browsing) {
+    if ((!np || Object.keys(np).length === 0) && !browsing) return
+    if (hidden) {
+      IPC.emit('discord-hidden')
+      return
+    }
+    let activity
+    if (!browsing) {
+      const w2g = state.value?.code
+      const details = np.title || undefined
+      const timeLeft = safeduration - targetTime;
+      const timestamps = !paused ? {
+        start: Date.now() - (targetTime > 0 ? targetTime * 1000 : 0),
+        end: Date.now() + timeLeft * 1000
+      } : undefined
+       activity = {
+        details,
+        state: (details && (np.media?.format === 'MOVIE' ? 'The Movie' : (np.episode ? 'Episode: ' + np.episode + (np.media?.episodes ? ' of ' + np.media.episodes : '') : 'Streaming the Universe'))),
+        timestamps,
+        assets: {
+          large_text: np.title,
+          large_image: np.thumbnail,
+          small_image: !paused ? 'logo' : 'paused',
+          small_text: (!paused ? '(Playing)' : '(Paused)') + ' https://github.com/NoCrypt/migu'
+        },
+        instance: true,
+        type: 3
+      }
+      // cannot have buttons and secrets at once
+      if (w2g) {
+        activity.secrets = {
+          join: w2g,
+          match: w2g + 'm'
+        }
+        activity.party.id = w2g + 'p'
+      } else {
+        activity.buttons = [
+          {
+            label: 'Download app',
+            url: 'https://github.com/NoCrypt/migu/releases/latest'
+          },
+          {
+            label: 'Watch on Migu',
+            url: `migu://anime/${np.media?.id}`
+          }
+        ]
+      }
+    } else {
+      activity = {
+        timestamps: { start: Date.now() },
+        details: 'Stream anime torrents',
+        state: 'Browsing for anime',
+        assets: {
+          large_image: 'logo',
+          large_text: 'https://github.com/NoCrypt/migu',
+          small_image: 'search',
+          small_text: 'Browsing for anime',
+        },
+        buttons: [
+          {
+            label: 'Download app',
+            url: 'https://github.com/NoCrypt/migu/releases/latest'
+          }
+        ],
+        instance: true,
+        type: 3
+      }
+    }
+    IPC.emit('discord', { activity })
+  }
 </script>
+
+{#if SUPPORTS.isAndroid}
+  <GestureLock bind:isLocked/>
+{/if}
 
 <!-- <svelte:window bind:innerWidth bind:innerHeight /> -->
 <div
@@ -1046,6 +1153,7 @@
   class:fitWidth
   bind:this={container}
   role='none'
+  use:volumeScroll
   on:pointermove={resetImmerse}
   on:keypress={resetImmerse}
   on:keydown={resetImmerse}
@@ -1138,12 +1246,12 @@
     </div>
     <div class='col-4' />
   </div>
-  <div class='middle d-flex align-items-center justify-content-center flex-grow-1 position-relative'>
+  <div class='middle d-flex align-items-center justify-content-center flex-grow-1 position-relative' use:swipeControls={{enabled: SUPPORTS.isAndroid, immersePlayer}}>
     <!-- eslint-disable-next-line svelte/valid-compile -->
-    <div class='w-full h-full position-absolute toggle-fullscreen' on:dblclick={toggleFullscreen} on:click|self={() => { if (page === 'player') playPause(); page = 'player' }} />
+    <div class='w-full h-full position-absolute toggle-fullscreen' on:dblclick={toggleFullscreen} on:click|self={() => { if (page === 'player' && ['none', 'player'].includes(overlay)) playPause(); page = 'player'; window.dispatchEvent(new Event('overlay-check')) }} />
     <!-- eslint-disable-next-line svelte/valid-compile -->
-    <div class='w-full h-full position-absolute toggle-immerse d-none' on:dblclick={toggleFullscreen} on:click|self={toggleImmerse} />
-    <div class='w-full h-full position-absolute mobile-focus-target d-none' use:click={() => { page = 'player' }} />
+    <div class='w-full h-full position-absolute toggle-immerse d-none' on:dblclick={!SUPPORTS.isAndroid ? toggleFullscreen : executeSeek} on:click|self={toggleImmerse} />
+    <div class='w-full h-full position-absolute mobile-focus-target d-none' use:click={() => { page = 'player'; window.dispatchEvent(new Event('overlay-check')); toggleFullscreen() }} />
     <!-- eslint-disable-next-line svelte/valid-compile -->
     <span class='icon ctrl h-full align-items-center justify-content-end w-150 mw-full mr-auto' on:click={rewind}>
       <Rewind size='3rem' />
@@ -1215,9 +1323,33 @@
         </span>
         <input class='ctrl h-full custom-range' type='range' min='0' max='1' step='any' data-name='setVolume' bind:value={volume} />
       </div>
-      <div class='ts' class:mr-auto={playbackRate === 1}>{toTS(targetTime, safeduration > 3600 ? 2 : 3)} / {toTS(safeduration - targetTime, safeduration > 3600 ? 2 : 3)}</div>
-      {#if playbackRate !== 1}
+      <div class='ts mr-auto' >{toTS(targetTime, safeduration > 3600 ? 2 : 3)} / {toTS(safeduration - targetTime, safeduration > 3600 ? 2 : 3)}</div>
+      <!-- {#if playbackRate !== 1}
         <div class='ts mr-auto'>x{playbackRate.toFixed(1)}</div>
+      {/if} -->
+      {#if video}
+        <span class='icon ctrl mr-5 d-flex align-items-center reload-video' title='Reload Video' use:click={() => video.load()}>
+          <RefreshCw size='2.5rem' strokeWidth={2.5} />
+        </span>
+      {/if}
+      <div class='dropdown dropup with-arrow' >
+        <span class='icon ctrl mr-5 d-flex align-items-center h-full' title='Playback Rate' use:click={toggleDropdown}>
+          <CircleGauge size='2.5rem'strokeWidth={2.5} />
+        </span>
+        <div class='dropdown-menu dropdown-menu-right d-flex align-items-center justify-content-center ctrl pb-5 text-capitalize'>
+          <span role='button' tabindex="0" class='icon ctrl d-flex align-items-center h-full' title='Slower' use:click={() => {if(playbackRate.toFixed(1) > $settings.playbackRateStep.toFixed(1)) playbackRate = video.defaultPlaybackRate -= $settings.playbackRateStep}}>
+            <Minus size='2.5rem'strokeWidth={2.5} />
+          </span>
+          <span role='button' tabindex="0" title='Click to Reset' use:click={() => playbackRate = video.defaultPlaybackRate = 1}>x{playbackRate.toFixed(1)}</span>
+          <span role='button' tabindex="0" class='icon ctrl d-flex align-items-center h-full' title='Faster' use:click={() => {if(playbackRate <= 10) playbackRate = video.defaultPlaybackRate += $settings.playbackRateStep}}>
+            <Plus size='2.5rem'strokeWidth={2.5} />
+          </span>
+        </div>
+      </div>
+      {#if SUPPORTS.isAndroid}
+        <span class='icon ctrl mr-5 d-flex align-items-center h-full' use:click={() => (isLocked = true)}>
+          <Lock size='2.5rem' strokeWidth={2.5} />
+        </span>
       {/if}
       <span class='icon ctrl mr-5 d-flex align-items-center keybinds' title='Keybinds [`]' use:click={() => (showKeybinds = true)}>
         <Keyboard size='2.5rem' strokeWidth={2.5} />
@@ -1404,10 +1536,6 @@
     justify-content: center;
     align-items: center;
     height: 100%;
-  }
-  .bind.material-symbols-outlined {
-    font-size: 2.2rem !important;
-    font-weight: unset !important;
   }
   .stats {
     font-size: 2.3rem !important;
@@ -1601,14 +1729,16 @@
   .seekbar {
     font-size: 2rem !important;
   }
-  .miniplayer .mobile-focus-target {
-    display: block !important;
-  }
-  .miniplayer .mobile-focus-target:focus-visible {
-    background: hsla(209, 100%, 55%, 0.3);
-  }
 
   @media (pointer: none), (pointer: coarse) {
+
+    .miniplayer .mobile-focus-target {
+      display: block !important;
+    }
+    .miniplayer .mobile-focus-target:focus-visible {
+      background: hsla(209, 100%, 55%, 0.3);
+    }
+
     .bottom .ctrl[data-name='playPause'],
     .bottom .volume,
     .bottom .keybinds {

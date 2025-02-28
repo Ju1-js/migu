@@ -1,20 +1,20 @@
 const mode = process.env.NODE_ENV?.trim() || 'development'
 
 const config = {
-  appId: 'watch.miru',
-  appName: 'Miru',
+  appId: 'watch.migu',
+  appName: 'Migu',
   webDir: 'build',
   android: {
     buildOptions: {
-      keystorePath: './watch.miru',
+      keystorePath: './watch.migu',
       keystorePassword: '',
-      keystoreAlias: 'watch.miru'
+      keystoreAlias: 'watch.migu'
     },
     webContentsDebuggingEnabled: true
   },
   plugins: {
     SplashScreen: { launchShowDuration: 0 },
-    CapacitorHttp: { enabled: false },
+    CapacitorHttp: { enabled: true },
     CapacitorNodeJS: { nodeDir: 'nodejs' }
   },
   server: {

@@ -3,9 +3,10 @@
   import { writable } from 'simple-store-svelte'
   import { anilistClient } from '@/modules/anilist.js'
   import IPC from '@/modules/ipc.js'
-  import { rss } from './views/TorrentSearch/TorrentModal.svelte'
+  // import { rss } from './views/TorrentSearch/TorrentModal.svelte'
 
   export const page = writable('home')
+  export const overlay = writable('none')
   export const view = writable(null)
   export async function handleAnime (anime) {
     view.set(null)
@@ -38,8 +39,11 @@
     if (!state) return
     ignoreNext = true
     view.set(null)
-    rss.set(null)
-    if (document.fullscreenElement) document.exitFullscreen()
+    // rss.set(null)
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+      if (state.type === 'view') page.set('home')
+    }
     if (state.type === 'page') {
       page.set(state.value)
     } else {
@@ -54,29 +58,95 @@
   import ViewAnime from './views/ViewAnime/ViewAnime.svelte'
   import TorrentModal from './views/TorrentSearch/TorrentModal.svelte'
   import Menubar from './components/Menubar.svelte'
-  import { Toaster } from 'svelte-sonner'
-  import Logout from './components/Logout.svelte'
+  import { toast, Toaster } from 'svelte-sonner'
+  import Profiles from './components/Profiles.svelte'
   import Navbar from './components/Navbar.svelte'
+  import { SUPPORTS } from '@/modules/support.js';
+  import UpdateModal, { changeLog, updateModal } from './components/UpdateModal.svelte';
 
   setContext('view', view)
+
+  // Cleaning up your messy IPC UPDATER listeners, 
+  // and unify them for android. smh.
+  // Client IPC listener: update-available, update-downloading, update-downloaded
+  // Server IPC listener: update, update-download, quit-and-install
+
+  IPC.on('update-available', () => {
+    changeLog.then((cl)=>{
+      if (cl[0].version !== localStorage.getItem('ignoredVersion')) {
+        $updateModal = true
+      }
+    })
+  })
+
+  IPC.on('update-downloading', () => {
+    toast.loading('Downloading Update...', {
+      duration: Number.POSITIVE_INFINITY, 
+      dismissable: false,
+      cancel:{
+        label: 'Hide',
+        onClick: () => {
+          toast.dismiss()
+        }
+      }
+    })
+  })
+
+  IPC.on('update-downloaded', () => {
+    toast.dismiss()
+    toast.success('Update Downloaded', {
+      duration: Number.POSITIVE_INFINITY,
+      description: 'Click install now to install the update. Installation can also occur after you quit the app.',
+      action: {
+        label: 'Install now',
+        onClick: () => IPC.emit('quit-and-install')
+      }
+    })
+
+    $updateModal = false
+  })
+  
+
 </script>
 
-<div class='page-wrapper with-transitions bg-dark position-relative' data-sidebar-type='overlayed-all'>
+<div class="page-wrapper with-transitions bg-dark position-relative" data-sidebar-type='overlayed-all'>
   <Menubar bind:page={$page} />
-  <ViewAnime />
-  <Logout />
   <Sidebar bind:page={$page} />
-  <Toaster visibleToasts={6} position='top-right' theme='dark' richColors duration={10000} closeButton />
-  <div class='overflow-hidden content-wrapper h-full z-10'>
-    <TorrentModal />
-    <Router bind:page={$page} />
+  <div class='overflow-hidden content-wrapper h-full'>
+    <Toaster visibleToasts={6} position='top-right' theme='dark' richColors duration={10000} closeButton toastOptions={{
+      classes: {
+        closeButton: SUPPORTS.isAndroid ? "toast-close-button" : ""
+      }
+    }} />
+    <Profiles />
+    <ViewAnime bind:overlay={$overlay} />
+    <UpdateModal/>
+    <TorrentModal bind:overlay={$overlay} />
+    <Router bind:page={$page} bind:overlay={$overlay} />
   </div>
   <Navbar bind:page={$page} />
 </div>
 
 <style>
+
+  :global(.toast-close-button){
+    bottom: -10px !important;
+    right: -10px !important;
+    left: unset !important;
+    top: unset !important;
+  }
+
+  :global(:where([data-sonner-toast]) :where([data-disabled='true']) ){
+    opacity: 0 !important;
+  }
+
+  :global(:root){
+    --normal-bg: var(--dark-color-light) !important;
+  }
+
   .content-wrapper {
     will-change: width;
+    white-space: pre-line;
     top: 0 !important;
   }
 

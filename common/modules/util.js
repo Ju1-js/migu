@@ -1,4 +1,5 @@
 import { SUPPORTS } from '@/modules/support.js'
+import levenshtein from 'js-levenshtein'
 
 export function countdown (s) {
   const d = Math.floor(s / (3600 * 24))
@@ -93,6 +94,32 @@ export function generateRandomHexCode (len) {
   return hexCode
 }
 
+export function generateRandomString(length) {
+  let string = ''
+  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~'
+  for (let i = 0; i < length; i++) {
+    string += possible.charAt(Math.floor(Math.random() * possible.length))
+  }
+  return string
+}
+
+export function matchPhrase(search, phrase, threshold) {
+  if (!search) return false
+  const normalizedSearch = search.toLowerCase().replace(/[^\w\s]/g, '')
+  phrase = Array.isArray(phrase) ? phrase : [phrase]
+
+  for (let p of phrase) {
+    const normalizedPhrase = p.toLowerCase().replace(/[^\w\s]/g, '')
+    if (normalizedSearch.includes(normalizedPhrase)) return true
+
+    const wordsInFileName = normalizedSearch.split(/\s+/)
+    for (let word of wordsInFileName) {
+      if (levenshtein(word, normalizedPhrase) <= threshold) return true
+    }
+  }
+  return false
+}
+
 export function throttle (fn, time) {
   let wait = false
   return (...args) => {
@@ -125,14 +152,19 @@ export const defaults = {
   playerAutoplay: true,
   playerPause: true,
   playerAutocomplete: true,
+  playerAutoSkip: false,
   playerDeband: false,
   rssQuality: '1080',
   rssFeedsNew: SUPPORTS.extensions ? [['New Releases', 'SubsPlease']] : [],
-  rssAutoplay: true,
+  rssAutoplay: false,
   /* torrentSpeed: 10, */ // Deprecated in favor of split upload/download
   downloadSpeed: 10,
   uploadSpeed: 10,
   slowSeeding: false,
+  disableStartupVideo: true,
+  amoledTheme: true,
+  enableAutoUpdate: !SUPPORTS.isAndroid,
+  sortByEco: true,
   torrentPersist: false,
   torrentDHT: false,
   torrentPeX: false,
@@ -141,15 +173,19 @@ export const defaults = {
   dhtPort: 0,
   missingFont: true,
   maxConns: 50,
-  subtitleRenderHeight: SUPPORTS.isAndroid ? '720' : '0',
+  subtitleRenderHeight: SUPPORTS.isAndroid ? '1080' : '0',
   subtitleLanguage: 'eng',
   audioLanguage: 'jpn',
   enableDoH: false,
   doHURL: 'https://cloudflare-dns.com/dns-query',
   disableSubtitleBlur: SUPPORTS.isAndroid,
   enableRPC: false,
-  smoothScroll: !SUPPORTS.isAndroid,
+  showDetailsInRPC: true,
+  smoothScroll: false,
   cards: 'small',
+  cardAudio: false,
+  titleLang: 'english',
+  hideMyAnime: false,
   expandingSidebar: !SUPPORTS.isAndroid,
   torrentPathNew: undefined,
   font: undefined,
@@ -159,7 +195,12 @@ export const defaults = {
   sources: {},
   enableExternal: false,
   playerPath: '',
-  playerSeek: 2,
+  playerSeek: 5,
+  swipeGestures: SUPPORTS.isAndroid,
+  volumeScroll: !SUPPORTS.isAndroid,
+  volumeScrollStep: 5,
+  playbackRateStep: 0.1,
+  listUpdateToast: true
   playerSkip: false,
   watchedUsing: true
 }

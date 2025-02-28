@@ -3,6 +3,9 @@ import { page } from '@/App.svelte'
 import { toast } from 'svelte-sonner'
 import clipboard from './clipboard.js'
 import IPC from '@/modules/ipc.js'
+import { settings } from '@/modules/settings.js'
+import { get } from 'svelte/store';
+
 import 'browser-event-target-emitter'
 import Debug from 'debug'
 
@@ -26,6 +29,7 @@ class TorrentWorker extends EventTarget {
         if (torrentRx.exec(text)) {
           media.set(null)
           add(text)
+          this.dispatch('info', 'A Magnet Link has been detected and is being processed. Files will be loaded shortly...')
         }
       }
     })
@@ -52,7 +56,8 @@ class TorrentWorker extends EventTarget {
 
 export const client = new TorrentWorker()
 
-client.send('load', localStorage.getItem('torrent'))
+if (!get(settings).disableStartupVideo) //hacky but works :p
+  client.send('load', localStorage.getItem('torrent'))
 
 client.on('files', ({ detail }) => {
   files.set(detail)
@@ -65,7 +70,7 @@ client.on('error', ({ detail }) => {
 
 client.on('warn', ({ detail }) => {
   debug(`Warn: ${detail.message || detail}`)
-  toast.warning('Torrent Warning', { description: '' + (detail.message || detail) })
+  toast.warning('Torrent Warning', { description: '' + (detail.message || detail), duration: 2000 })
 })
 
 client.on('info', ({ detail }) => {

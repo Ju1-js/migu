@@ -4,23 +4,24 @@ import path from 'path'
 
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
-    app.setAsDefaultProtocolClient('miru', process.execPath, [path.resolve(process.argv[1])])
+    app.setAsDefaultProtocolClient('migu', process.execPath, [path.resolve(process.argv[1])])
   }
 } else {
-  app.setAsDefaultProtocolClient('miru')
+  app.setAsDefaultProtocolClient('migu')
 }
 
 export default class Protocol {
-  // schema: miru://key/value
+  // schema: migu://key/value
   protocolMap = {
     auth: token => this.sendToken(token),
+    malauth: token => this.sendMalToken(token),
     anime: id => this.window.webContents.send('open-anime', id),
     w2g: link => this.window.webContents.send('w2glink', link),
     schedule: () => this.window.webContents.send('schedule'),
     donate: () => shell.openExternal('https://github.com/sponsors/ThaUnknown/')
   }
 
-  protocolRx = /miru:\/\/([a-z0-9]+)\/(.*)/i
+  protocolRx = /migu:\/\/([a-z0-9]+)\/(.*)/i
 
   /**
    * @param {import('electron').BrowserWindow} window
@@ -28,7 +29,7 @@ export default class Protocol {
   constructor (window) {
     this.window = window
 
-    protocol.registerHttpProtocol('miru', (req, cb) => {
+    protocol.registerHttpProtocol('migu', (req, cb) => {
       const token = req.url.slice(7)
       this.window.loadURL(development ? 'http://localhost:5000/app.html' + token : `file://${path.join(__dirname, '/app.html')}${token}`)
     })
@@ -69,6 +70,20 @@ export default class Protocol {
       if (token.endsWith('/')) token = token.slice(0, -1)
       this.window.webContents.send('altoken', token)
     }
+  }
+
+  /**
+   * @param {string} line
+   */
+  sendMalToken (line) {
+    let code = line.split('code=')[1].split('&state')[0]
+    let state = line.split('&state=')[1]
+    if (code && state) {
+      if (code.endsWith('/')) code = code.slice(0, -1)
+      if (state.endsWith('/')) state = state.slice(0, -1)
+      if (state.includes('%')) state = decodeURIComponent(state)
+      this.window.webContents.send('maltoken', code, state)
+    } 
   }
 
   /**

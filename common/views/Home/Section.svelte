@@ -8,13 +8,14 @@
   import { search } from '../Search.svelte'
   import { page } from '@/App.svelte'
   import { click } from '@/modules/click.js'
+  import { SUPPORTS } from '@/modules/support.js';
 
   export let opts
 
   function deferredLoad (element) {
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
-        if (!opts.preview.value) opts.preview.value = opts.load(1, 15)
+        if (!opts.preview.value) opts.preview.value = opts.load(1, 15, { ...opts.variables })
         observer.unobserve(element)
       }
     }, { threshold: 0 })
@@ -26,7 +27,8 @@
   function _click () {
     $search = {
       ...opts.variables,
-      load: opts.load
+      load: opts.load,
+      title: opts.title,
     }
     $page = 'search'
   }
@@ -38,10 +40,14 @@
   <div class='font-size-24 font-weight-semi-bold' use:click={_click}>{opts.title}</div>
   <div class='pr-10 ml-auto font-size-12' use:click={_click}>View More</div>
 </span>
-<div class='position-relative'>
-  <div class='pb-10 w-full d-flex flex-row justify-content-start gallery' class:isRSS={opts.isRSS}>
+<div class='position-relative '>
+  <div class='pb-10 w-full d-flex flex-row justify-content-start gallery' 
+       class:isRSS={opts.isRSS} 
+       class:overflow-x-scroll={opts.isRSS && SUPPORTS.isAndroid} 
+       class:fader={!SUPPORTS.isAndroid}
+       >
     {#each $preview || fakecards as card}
-      <Card {card} />
+      <Card {card} variables={{...opts.variables}} />
     {/each}
     {#if $preview?.length}
       <ErrorCard promise={$preview[0].data} />
@@ -56,13 +62,14 @@
   .text-muted:hover {
     color: var(--dm-link-text-color-hover) !important;
   }
-  .gallery:after {
+
+  .fader:after {
+    background: var(--section-end-gradient);
     content: '';
     position: absolute;
     right: 0;
     height: 100%;
     width: 8rem;
-    background: var(--section-end-gradient);
     pointer-events: none;
   }
   .gallery {

@@ -6,16 +6,16 @@ export default class Discord {
   defaultStatus = {
     activity: {
       timestamps: { start: Date.now() },
-      details: 'Stream anime torrents, real-time.',
+      details: 'Stream anime torrents',
       state: 'Watching anime',
       assets: {
         small_image: 'logo',
-        small_text: 'https://github.com/ThaUnknown/miru'
+        small_text: 'https://github.com/NoCrypt/migu'
       },
       buttons: [
         {
           label: 'Download app',
-          url: 'https://github.com/ThaUnknown/miru/releases/latest'
+          url: 'https://github.com/NoCrypt/migu/releases/latest'
         }
       ],
       instance: true,
@@ -31,32 +31,35 @@ export default class Discord {
   /** @type {Discord['defaultStatus'] | undefined} */
   cachedPresence
 
+  rpcEnabled = false  // Property to track RPC state
+
   /** @param {import('electron').BrowserWindow} window */
-  constructor(window) {
-    // Toggle Discord Rich Presence on/off
-    ipcMain.on('show-discord-status', async (event, enableRPC) => {
-      this.allowDiscordDetails = enableRPC
-      if (this.allowDiscordDetails) {
-        // Enable Rich Presence
-        await this.setDiscordRPC(this.cachedPresence || this.defaultStatus)
-      } else {
-        // Disable Rich Presence
-        await this.clearDiscordRPC()
-      }
+  constructor (window) {
+    ipcMain.on('show-discord-status', (event, data) => {
+      this.allowDiscordDetails = data
+      this.debouncedDiscordRPC(this.allowDiscordDetails && this.rpcEnabled ? this.cachedPresence : undefined)
     })
 
     // Update presence details
     ipcMain.on('discord', async (event, data) => {
       this.cachedPresence = data
-      if (this.allowDiscordDetails) {
-        await this.setDiscordRPC(this.cachedPresence || this.defaultStatus)
-      }
+      this.debouncedDiscordRPC(this.allowDiscordDetails && this.rpcEnabled ? this.cachedPresence : undefined)
     })
 
-    // Discord client ready event
+    ipcMain.on('toggle-rpc', (event, data) => {
+      this.toggleRPC(data)
+    })
+
+    ipcMain.on('discord-hidden', () => {
+      this.debouncedDiscordRPC(undefined, true)
+    })
+
     this.discord.on('ready', async () => {
-      if (this.allowDiscordDetails) {
-        await this.setDiscordRPC(this.cachedPresence || this.defaultStatus)
+      if (this.rpcEnabled) {
+        this.setDiscordRPC(this.cachedPresence || this.defaultStatus)
+        this.discord.subscribe('ACTIVITY_JOIN_REQUEST')
+        this.discord.subscribe('ACTIVITY_JOIN')
+        this.discord.subscribe('ACTIVITY_SPECTATE')
       }
     })
 
@@ -72,40 +75,34 @@ export default class Discord {
     this.debouncedDiscordRPC = debounce((status) => this.setDiscordRPC(status), 4500)
   }
 
-  /**
-   * Logs in the Discord RPC client and retries on failure.
-   */
-  loginRPC() {
-    this.discord.login({ clientId: '954855428355915797' }).catch(() => {
-      setTimeout(() => this.loginRPC(), 5000).unref()
-    })
-  }
-
-  /**
-   * Sets the Discord Rich Presence.
-   * @param {Discord['defaultStatus'] | undefined} data
-   */
-  async setDiscordRPC(data) {
-    if (this.discord.user && data) {
-      try {
-        data.pid = process.pid
-        await this.discord.request('SET_ACTIVITY', data)
-      } catch (error) {
-        console.error('Error setting Discord RPC:', error)
-      }
+  loginRPC () {
+    if (this.rpcEnabled) {
+      this.discord.login({ clientId: '954855428355915797' }).catch(() => {
+        setTimeout(() => this.loginRPC(), 5000).unref()
+      })
     }
   }
 
-  /**
-   * Clears Discord Rich Presence completely.
-   */
-  async clearDiscordRPC() {
+  setDiscordRPC (data = this.defaultStatus) {
+    if (this.discord.user && data && this.rpcEnabled) {
+      data.pid = process.pid
+      this.discord.request('SET_ACTIVITY', data)
+    }
+  }
+
+  clearDiscordRPC () {
     if (this.discord.user) {
-      try {
-        await this.discord.request('SET_ACTIVITY', { pid: process.pid, activity: null })
-      } catch (error) {
-        console.error('Error clearing Discord RPC:', error)
-      }
+      this.discord.request('SET_ACTIVITY', { pid: process.pid })
+    }
+  }
+
+  toggleRPC (enabled) {
+    this.rpcEnabled = enabled
+    if (this.rpcEnabled) {
+      this.loginRPC()
+      this.setDiscordRPC(this.cachedPresence || this.defaultStatus)
+    } else {
+      this.clearDiscordRPC()
     }
   }
 }

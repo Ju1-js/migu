@@ -141,9 +141,8 @@
 {/if}
 
 <h4 class='mb-10 font-weight-bold'>Client Settings</h4>
-<SettingCard title='Torrent Download Location' description='Path to the folder used to store torrents. By default this is the TMP folder, which might lose data when your OS tries to reclaim storage.  {SUPPORTS.isAndroid ? 'RESTART IS REQUIRED. /sdcard/ is internal storage, not external SD Cards. /storage/AB12-34CD/ is external storage, not internal. Thank you Android!' : ''}'>
-  <div
-    class='input-group w-300 mw-full'>
+<SettingCard title='Torrent Download Location' description='Path to the folder used to store torrents. By default this is the TMP folder, which might lose data when your OS tries to reclaim storage.  {SUPPORTS.isAndroid ? "RESTART IS REQUIRED. /sdcard/ is internal storage, not external SD Cards. /storage/AB12-34CD/ is external storage, not internal. Thank you Android!" : ""}'>
+  <div class='input-group w-300 mw-full'>
     <div class='input-group-prepend'>
       <button type='button' use:click={handleFolder} class='btn btn-primary input-group-append'>Select Folder</button>
     </div>
@@ -197,6 +196,12 @@
 </SettingCard>
 
 <h4 class='mb-10 font-weight-bold'>Bandwidth Settings</h4>
+<SettingCard title='Sort By Size + Seeders' description="This option will sort the list of torrents by size and seeders. Resulting in less bandwidth usage.">
+  <div class='custom-switch'>
+    <input type='checkbox' id='eco-mode' bind:checked={settings.sortByEco} />
+    <label for='eco-mode'>{settings.sortByEco ? 'On' : 'Off'}</label>
+  </div>
+</SettingCard>
 <SettingCard title='Slow Seeding' description="Will limit upload speed to 1 MB/s. This might kill the swarm health. But very useful when you have a limited bandwidth.">
   <div class='custom-switch'>
     <input type='checkbox' id='slow-seeding' bind:checked={settings.slowSeeding} />
@@ -221,3 +226,10 @@
     </div>
   </SettingCard>
 {/if}
+<SettingCard title='Disable Loading Last Video On Startup' description='Loading last video on startup can increase your bandwidth usage while looking for new videos.'>
+  <div class='custom-switch'>
+    <input type='checkbox' id='disable-startup-video' bind:checked={settings.disableStartupVideo} />
+    <label for='disable-startup-video'>{settings.disableStartupVideo ? 'On' : 'Off'}</label>
+  </div>
+</SettingCard>
+  
